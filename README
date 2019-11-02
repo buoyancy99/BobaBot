@@ -1,3 +1,6 @@
 # EECS106A Project
+
 ## Installation
 First you need to install rosmelodic on ubuntu 18.04
+*install intel opencl https://github.com/intel/compute-runtime/releases
+*install openvino then ros_openvino
