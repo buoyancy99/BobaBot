@@ -1,0 +1,7 @@
+<launch> 
+  <arg name="map_file" value="$(find roborts_bringup)/maps/cory307.yaml">
+  </arg> 
+  <node pkg="map_server" type="map_server" name="map_server" args="$(arg map_file)"> 
+  </node> 
+   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find roborts_bringup)/rviz/map_vis.rviz" output="screen"/>
+</launch>

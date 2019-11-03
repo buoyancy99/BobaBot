@@ -1,0 +1,20 @@
+<launch>
+  <master auto="start"/>
+
+  <include file="$(find roborts_bringup)/launch/base.launch" />
+
+
+  <!-- Run the robot sdk interface -->
+   <node name="rplidar_node" pkg="rplidar_ros" type="rplidarNode" output="screen">
+      <param name="serial_port" type="string" value="/dev/rplidar"/>
+      <param name="serial_baudrate" type="int" value="115200"/>
+      <param name="frame_id" type="string" value="base_laser_link"/>
+      <param name="inverted" type="bool" value="false"/>
+      <param name="angle_compensate" type="bool" value="true"/>
+  </node>
+  <include file="$(find roborts_bringup)/launch/slam_gmapping.xml"/>
+  <include file="$(find roborts_bringup)/launch/static_tf.launch" />
+  <!--run the map saver-->
+  <node name="map_saver1" pkg="map_server" type="map_saver" args="-f $(env HOME)/ee106a/src/RoboRTS/roborts_bringup/maps/cory307" respawn="true" />
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find roborts_bringup)/rviz/map_vis.rviz" output="screen"/>
+</launch>
