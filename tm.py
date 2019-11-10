@@ -1,14 +1,20 @@
-import cv2
+
 import sys
 import numpy as np
 import time
+import cv2
 import imutils
- 
+
 major_ver, minor_ver, subminor_ver = (cv2.__version__).split('.')
 print(major_ver, minor_ver, subminor_ver)
 
-def tm(img, template):
-    gray = img[:,:,0]
+def edge(img):
+    #return cv2.Canny(img, 0, 100)
+    #return cv2.GaussianBlur(img,(5,5),0)
+    return cv2.equalizeHist(img) 
+
+def tm(img, template, prev_loc=None):
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     #template = template[:,:,0]
     #print(template.shape)
     cv2.imshow("bbox", template)
@@ -27,10 +33,11 @@ def tm(img, template):
 
 
     found = None
-    for scale in np.linspace(0.2, 1.5, 5)[::-1]:
+    for scale in np.linspace(0.2, 1.0, 20)[::-1]:
         # resize the image according to the scale, and keep track
         # of the ratio of the resizing
         resized = imutils.resize(gray, width = int(gray.shape[1] * scale))
+        resized = edge(resized)
         r = gray.shape[1] / float(resized.shape[1])
  
         # if the resized image is smaller than the template, then break
@@ -38,7 +45,7 @@ def tm(img, template):
         if resized.shape[0] < h or resized.shape[1] < w:
             break
 
-        result = cv2.matchTemplate(gray, template, method)
+        result = cv2.matchTemplate(resized, template, method)
         (min_val, max_val, min_loc, max_loc) = cv2.minMaxLoc(result)
  
         # check to see if the iteration should be visualized
@@ -68,17 +75,26 @@ def tm(img, template):
     # cv2.rectangle(img,top_left, bottom_right, 255, 2)
     #return img
 
-    (_, maxLoc, r) = found
+    (v, maxLoc, r) = found
+    print(v)
     (startX, startY) = (int(maxLoc[0] * r), int(maxLoc[1] * r))
     (endX, endY) = (int((maxLoc[0] + w) * r), int((maxLoc[1] + h) * r))
 
     print("--- %s seconds ---" % (time.time() - start_time))
+
+    #if prev_loc and abs(maxLoc[0] - prev_loc[0]) > 10 and v > 400000.0:
+    #    return
+
+    img[img[:,:,0] < 150] = 0
+
+    #img = img[img[:,:,0] > 150]
  
     # draw a bounding box around the detected result and display the image
     cv2.rectangle(img, (startX, startY), (endX, endY), (0, 0, 255), 2)
+    return maxLoc
 
  
-if __name__ == '__main__' :
+if __name__ == '__main__':
  
     # Set up tracker.
     # Instead of MIL, you can also use
@@ -86,7 +102,8 @@ if __name__ == '__main__' :
     #button = cv2.imread('button.png')[:,:,0]
  
     # Read video
-    video = cv2.VideoCapture(1)
+    video = cv2.VideoCapture(-1)
+    
  
     # Exit if video not opened.
     if not video.isOpened():
@@ -106,13 +123,15 @@ if __name__ == '__main__' :
  
     # # Uncomment the line below to select a different bounding box
     r = cv2.selectROI(frame, False)
-    button = frame[:,:,0][int(r[1]):int(r[1]+r[3]), int(r[0]):int(r[0]+r[2])]
+    button = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)[int(r[1]):int(r[1]+r[3]), int(r[0]):int(r[0]+r[2])]
+    button = edge(button)
     #cv2.imshow("bbox", button)
     print(button.shape)
  
     # # Initialize tracker with first frame and bounding box
     # ok = tracker.init(frame, bbox)
  
+    prev_loc = None
     while True:
         # Read a new frame
         ok, frame = video.read()
@@ -134,7 +153,8 @@ if __name__ == '__main__' :
             # p1 = (int(bbox[0]), int(bbox[1]))
             # p2 = (int(bbox[0] + bbox[2]), int(bbox[1] + bbox[3]))
             # cv2.rectangle(frame, p1, p2, (255,0,0), 2, 1)
-            tm(frame, button)
+            prev_loc = tm(frame, button, prev_loc)
+            
         else :
             # Tracking failure
             cv2.putText(frame, "Tracking failure detected", (100,80), cv2.FONT_HERSHEY_SIMPLEX, 0.75,(0,0,255),2)
