@@ -56,7 +56,7 @@
   <!-- Auto-white balance -->
   <arg name="state_awb" default="true" />
   <!-- IR intensity -->
-  <arg name="ir_intensity" default="4" />
+  <arg name="ir_intensity" default="0" />
   <!-- IR Depth Only -->
   <arg name="ir_depth_only" default="false" />
 
