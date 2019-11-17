@@ -1,4 +1,4 @@
-image: /home/yangl/ee106a/src/RoboRTS/roborts_bringup/maps/SDH2.pgm
+image: SDH2.pgm
 resolution: 0.050000
 origin: [-75.000000, -50.000000, 0.000000]
 negate: 0
