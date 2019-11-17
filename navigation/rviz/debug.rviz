@@ -76,11 +76,11 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
+        base_footprint:
+          Value: true
         base_laser_link:
           Value: true
         base_link:
-          Value: true
-        gimbal:
           Value: true
         map:
           Value: true
@@ -94,11 +94,10 @@ Visualization Manager:
       Tree:
         map:
           odom:
-            base_link:
-              base_laser_link:
-                {}
-              gimbal:
-                {}
+            base_footprint:
+              base_link:
+                base_laser_link:
+                  {}
       Update Interval: 0
       Value: true
     - Alpha: 0.699999988079071
@@ -190,6 +189,14 @@ Visualization Manager:
       Topic: /move_base/TrajectoryPlannerROS/global_plan
       Unreliable: false
       Value: true
+    - Alpha: 1
+      Class: rviz/Polygon
+      Color: 25; 255; 0
+      Enabled: true
+      Name: Polygon
+      Topic: /move_base/global_costmap/footprint
+      Unreliable: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -218,7 +225,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/ThirdPersonFollower
-      Distance: 4.540514945983887
+      Distance: 8.053138732910156
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -233,10 +240,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.5697963237762451
+      Pitch: 1.319796085357666
       Target Frame: map
       Value: ThirdPersonFollower (rviz)
-      Yaw: 2.7676212787628174
+      Yaw: 2.852623224258423
     Saved: ~
 Window Geometry:
   Displays:
