@@ -42,5 +42,5 @@
   <include file="$(find roborts_bringup)/launch/static_tf.launch" />
 
   <!--run the map saver-->
-  <node name="map_saver1" pkg="map_server" type="map_saver" args="-f $(env HOME)/ee106a/src/RoboRTS/roborts_bringup/maps" respawn="false" />
+   <node name="map_saver1" pkg="map_server" type="map_saver" args="-f $(find roborts_bringup)/maps/cory307" respawn="true" />
 </launch>

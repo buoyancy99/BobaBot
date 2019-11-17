@@ -15,6 +15,6 @@
   <include file="$(find roborts_bringup)/launch/slam_gmapping.xml"/>
   <include file="$(find roborts_bringup)/launch/static_tf.launch" />
   <!--run the map saver-->
-  <node name="map_saver1" pkg="map_server" type="map_saver" args="-f $(env HOME)/ee106a/src/RoboRTS/roborts_bringup/maps/cory307" respawn="true" />
+  <node name="map_saver1" pkg="map_server" type="map_saver" args="-f $(find roborts_bringup)/maps/cory307" respawn="true" />
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(find roborts_bringup)/rviz/map_vis.rviz" output="screen"/>
 </launch>
