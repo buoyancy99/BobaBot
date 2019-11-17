@@ -76,8 +76,8 @@ floorplan
 ( 
   name "SDH Map"
   bitmap "../maps/SDH7.pgm"
-  size [34.2 19.32 1.000]
-  pose [ 14.15 -6.85 0 0 ]
+  size [24 19 1.000]
+  pose [ 10 -7.0 0 0 ]
 )
 
 # throw in a robot
