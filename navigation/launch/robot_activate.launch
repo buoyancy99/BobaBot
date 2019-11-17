@@ -4,7 +4,7 @@
 	<!-- Run the robot sdk interface -->
 	<include file="$(find roborts_bringup)/launch/base.launch" />
 	<!-- Publish static tf -->
-	<include file="$(find boba_nav)/launch/static_tf.launch" />
+	<include file="$(find navigation)/launch/static_tf.launch" />
 	<!-- Run the lidar node -->
 	<node name="rplidar_node" pkg="rplidar_ros" type="rplidarNode" output="screen">
 		<param name="serial_port" type="string" value="/dev/rplidar" />

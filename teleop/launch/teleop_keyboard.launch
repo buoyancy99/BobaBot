@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+  <node name="switch" pkg="teleop" type="teleop_keyboard.py" output="screen"/>
+  <node name="keyboard" pkg="keyboard" type="keyboard" />
+  <node name="joy_node" pkg="joy" type="joy_node" output="screen"/>
+</launch>
