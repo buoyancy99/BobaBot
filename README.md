@@ -16,7 +16,7 @@ The path to your setupvars.sh may be different.
 ## Navigation
 http://wiki.ros.org/navigation/Tutorials/RobotSetup#Navigation_Stack_Setup
 Dependencies: sudo apt install ros-melodic-navigation
-
+For teleop: `git clone https://github.com/lrse/ros-keyboard.git`
 Package name : boba_nav  
 Launch file : robot_activate.launch and robot_nav.launch (for simulation with stage, just robot_nav_sim.launch)  
 Align the robot with 2D pose estimate and set the goal with 2D set goal, also can set goal with http://wiki.ros.org/navigation/Tutorials/SendingSimpleGoals  
