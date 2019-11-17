@@ -1,4 +1,6 @@
 # EECS106A Project
+## RoboRTS Dependency
+*sudo apt-get install ros-melodic-libg2o libgoogle-glog-dev
 
 ## Installation
 First you need to install rosmelodic on ubuntu 18.04
