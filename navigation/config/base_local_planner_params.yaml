@@ -12,4 +12,5 @@ TrajectoryPlannerROS:
 
   meter_scoring: true
 
-  dwa: false
+  
+

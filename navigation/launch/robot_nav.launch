@@ -26,5 +26,5 @@
 		<rosparam file="$(find navigation)/config/base_local_planner_params.yaml" command="load" />
 	</node>
 	<!-- Run the rviz -->
-	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find roborts_bringup)/rviz/roborts.rviz" />
+	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find navigation)/rviz/debug.rviz" />
 </launch>
