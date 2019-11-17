@@ -8,10 +8,55 @@ import imutils
 major_ver, minor_ver, subminor_ver = (cv2.__version__).split('.')
 print(major_ver, minor_ver, subminor_ver)
 
+
+MIN_MATCH_COUNT = 10
+
+def fm(img1, img2):
+    # Initiate SIFT detector
+    sift = cv2.xfeatures2d.SURF_create()
+
+    # find the keypoints and descriptors with SIFT
+    kp1, des1 = sift.detectAndCompute(img1,None)
+    kp2, des2 = sift.detectAndCompute(img2,None)
+
+    FLANN_INDEX_KDTREE = 0
+    index_params = dict(algorithm = FLANN_INDEX_KDTREE, trees = 5)
+    search_params = dict(checks = 50)
+
+    flann = cv2.FlannBasedMatcher(index_params, search_params)
+
+    matches = flann.knnMatch(des1,des2,k=2)
+
+    # store all the good matches as per Lowe's ratio test.
+    good = []
+    for m,n in matches:
+        if m.distance < 0.7*n.distance:
+            good.append(m)
+
+    if len(good)>MIN_MATCH_COUNT:
+        src_pts = np.float32([ kp1[m.queryIdx].pt for m in good ]).reshape(-1,1,2)
+        dst_pts = np.float32([ kp2[m.trainIdx].pt for m in good ]).reshape(-1,1,2)
+
+        M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC,5.0)
+        #matchesMask = mask.ravel().tolist()
+
+        h,w = img1[:,:,0].shape
+        pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2)
+        dst = cv2.perspectiveTransform(pts,M)
+
+        img2 = cv2.polylines(img2,[np.int32(dst)],True,255,3, cv2.LINE_AA)
+
+    else:
+        print("Not enough matches are found - %d/%d" % (len(good),MIN_MATCH_COUNT))
+        #matchesMask = None
+
+    #print(mask.shape)
+
 def edge(img):
     #return cv2.Canny(img, 0, 100)
     #return cv2.GaussianBlur(img,(5,5),0)
-    return cv2.equalizeHist(img) 
+    #return cv2.equalizeHist(img) 
+    return img
 
 def tm(img, template, prev_loc=None):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -85,12 +130,13 @@ def tm(img, template, prev_loc=None):
     #if prev_loc and abs(maxLoc[0] - prev_loc[0]) > 10 and v > 400000.0:
     #    return
 
-    img[img[:,:,0] < 150] = 0
+    #img[img[:,:,0] < 150] = 0
 
     #img = img[img[:,:,0] > 150]
  
     # draw a bounding box around the detected result and display the image
     cv2.rectangle(img, (startX, startY), (endX, endY), (0, 0, 255), 2)
+    print(endX-startX)
     return maxLoc
 
 
@@ -173,6 +219,7 @@ def tm_multi(img, template_list, prev_loc=None):
  
     # draw a bounding box around the detected result and display the image
     cv2.rectangle(img, (startX, startY), (endX, endY), (0, 0, 255), 2)
+    
     return maxLoc
 
  
@@ -184,7 +231,7 @@ if __name__ == '__main__':
     #button = cv2.imread('button.png')[:,:,0]
  
     # Read video
-    video = cv2.VideoCapture(-1)
+    video = cv2.VideoCapture(0)
     
  
     # Exit if video not opened.
@@ -205,7 +252,8 @@ if __name__ == '__main__':
  
     # # Uncomment the line below to select a different bounding box
     r = cv2.selectROI(frame, False)
-    button = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)[int(r[1]):int(r[1]+r[3]), int(r[0]):int(r[0]+r[2])]
+    #button = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    button = frame[int(r[1]):int(r[1]+r[3]), int(r[0]):int(r[0]+r[2])]
     button = edge(button)
     #cv2.imshow("bbox", button)
     print(button.shape)
@@ -235,7 +283,8 @@ if __name__ == '__main__':
             # p1 = (int(bbox[0]), int(bbox[1]))
             # p2 = (int(bbox[0] + bbox[2]), int(bbox[1] + bbox[3]))
             # cv2.rectangle(frame, p1, p2, (255,0,0), 2, 1)
-            prev_loc = tm(frame, button, prev_loc)
+            #prev_loc = tm(frame, button, prev_loc)
+            fm(button, frame)
             
         else :
             # Tracking failure
