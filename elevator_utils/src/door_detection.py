@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import rospy
 from sensor_msgs.msg import Image
+from std_msgs.msg import Int8
 
 import cv2
 from cv_bridge import CvBridge, CvBridgeError
@@ -12,8 +13,9 @@ img_count = 0
 prev_frame = []
 
 def run_detection():
+    pub = rospy.Publisher('elevator_door_open', Int8, queue_size=10)
     rospy.init_node('door_detector')
-    rate = rospy.Rate(10)
+    #rate = rospy.Rate(10)
 
     bridge = CvBridge()
     cv2.namedWindow("door_detector", 0)
@@ -159,8 +161,8 @@ def run_detection():
         door_value = optic_flow(cv_image)
         if door_value is not None:
             print(door_value)
-            pub = rospy.Publisher('chatter', String, queue_size=10)
-   8     rospy.init_node('talker', anonymous=True)
+            pub.publish(door_value)
+
         #print(max_depth_loc)
         #cv2.imshow("cropped", bbox(cv_image))
         #cv2.circle(cv_image, max_depth_loc, 50, (0, 255, 0), -1)
