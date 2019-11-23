@@ -13,24 +13,11 @@ prev_frame = []
 
 def run_detection():
     rospy.init_node('door_detector')
+    rate = rospy.Rate(10)
+
     bridge = CvBridge()
     cv2.namedWindow("door_detector", 0)
-    #gimbal_pub = rospy.Publisher('/cmd_gimbal_angle', GimbalAngle, queue_size=10)
-    #chassis_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
 
-    # def mouse_callback(event, x, y, flags, param):
-    #     global mouse_x
-    #     global mouse_y
-    #     global mouse_left
-        
-    #     mouse_x = (x - 640) / 1280
-    #     mouse_y = (y - 360) / 720
-
-    #     if event == cv2.EVENT_LBUTTONDOWN:
-    #         mouse_left = True
-
-    #     if event == cv2.EVENT_LBUTTONUP:
-    #         mouse_left = False
 
     def optic_flow(frame2):
         global prev_frame
@@ -54,12 +41,12 @@ def run_detection():
 
         flow = cv2.calcOpticalFlowFarneback(prvs,next, None, 0.5, 3, 15, 3, 5, 1.2, 0)
         if flow.max() < 20:
-            return
-        print(flow.max())
-        print(flow.shape)
+            return 0 # no door
+        #print(flow.max())
+        #print(flow.shape)
         
-        print(np.argmax(flow))
-        print(np.argmin(flow))
+        #print(np.argmax(flow))
+        #print(np.argmin(flow))
         #print(argmax2d(flow))
 
         mag, ang = cv2.cartToPolar(flow[...,0], flow[...,1])
@@ -82,6 +69,10 @@ def run_detection():
         #prvs = next
 
         prev_frame = frame2
+        if argmax2d(rgb[:,:,0])[0] < 1280/2:
+            return 1 #left door
+        else:
+            return 2 #rigth door  
 
     def detect_max_increase_depth(img_now, img2_prev):
         diff = img1 - img2
@@ -165,10 +156,14 @@ def run_detection():
         #print(max_depth_loc)
         #cv_image = cv2.cvtColor(cv_image, cv2.COLOR_GRAY2RGB)
         #cv_image = np.zeros(cv_image.shape)
-        optic_flow(cv_image)
+        door_value = optic_flow(cv_image)
+        if door_value is not None:
+            print(door_value)
+            pub = rospy.Publisher('chatter', String, queue_size=10)
+   8     rospy.init_node('talker', anonymous=True)
         #print(max_depth_loc)
         #cv2.imshow("cropped", bbox(cv_image))
-        cv2.circle(cv_image, max_depth_loc, 50, (0, 255, 0), -1)
+        #cv2.circle(cv_image, max_depth_loc, 50, (0, 255, 0), -1)
         # print(cv_image.shape)
         #cv_image = img_fill(cv_image, 150)
         cv2.imshow("door_detector", cv_image)
@@ -179,7 +174,7 @@ def run_detection():
     #cv2.setMouseCallback('TeleOp', mouse_callback)
     #sub_image = rospy.Subscriber("/mynteye/left/image_color", Image, image_callback)
 
-    d = rospy.Subscriber("/mynteye/depth/image_raw", Image, depth_image_callback)
+    #d = rospy.Subscriber("/mynteye/depth/image_raw", Image, depth_image_callback)
     
     color_image = rospy.Subscriber("/mynteye/left/image_color", Image, color_image_callback)
 
