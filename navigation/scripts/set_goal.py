@@ -3,20 +3,41 @@ import rospy
 import actionlib
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
+from move_base_msgs.msg import MoveBaseActionResult
 
 
 class Navigation:
+
     def __init__(self):
         self.ps_cov_pub = rospy.Publisher(
             'initialpose', PoseWithCovarianceStamped, queue_size=1)
-
+        self.nav_result_sub = rospy.Subscriber(
+            'move_base/result', MoveBaseActionResult, self.getNavResult, queue_size=1)
         self.client = actionlib.SimpleActionClient('move_base', MoveBaseAction)
         self.client.wait_for_server()
+        self.reachGoal = False
+
+    def getNavResult(self, data):
+        '''
+        http://docs.ros.org/api/actionlib_msgs/html/msg/GoalStatus.html
+        uint8 PENDING=0
+        uint8 ACTIVE=1
+        uint8 PREEMPTED=2
+        uint8 SUCCEEDED=3
+        uint8 ABORTED=4
+        uint8 REJECTED=5
+        uint8 PREEMPTING=6
+        uint8 RECALLING=7
+        uint8 RECALLED=8
+        uint8 LOST=9
+        '''
+        self.reachGoal = data.status.status==3
 
     def set_init_pose(self, floor=2,
                       pos=[-0.169913589954, -1.4194881916, 0],
                       ori=[0, 0, -0.698143317423, 0.715958035319],
-                      cov=[0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853892326654787], frame_id="map"):
+                      cov=[0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853892326654787], 
+                      frame_id="map"):
         ps = PoseStamped()
         ps_cov = PoseWithCovarianceStamped()
         ps.pose.position.x = pos[0]
@@ -65,6 +86,8 @@ if __name__ == '__main__':
         move.set_init_pose()
         # rospy.sleep(10)
         result = move.movebase_client()
+        if move.reachGoal:
+            rospy.loginfo("Reached position")
         # r = rospy.Rate(3) # 10hz
         # while result != actionlib.SimpleGoalState.DONE:
         #     result = move.movebase_client()
