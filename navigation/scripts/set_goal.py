@@ -4,27 +4,28 @@ import actionlib
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
 
+
 class Navigation:
     def __init__(self):
         self.ps_cov_pub = rospy.Publisher(
-            'init_pose_conv', PoseWithCovarianceStamped, queue_size=1)
+            'initialpose', PoseWithCovarianceStamped, queue_size=1)
 
         self.client = actionlib.SimpleActionClient('move_base', MoveBaseAction)
         self.client.wait_for_server()
 
     def set_init_pose(self, floor=2,
-                        pos=[-0.050385594368, -1.39488351345],
-                        cov=[
-                            0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0,
-                            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                            0.0, 0.0, 0.0, 0.06853892326654787
-                        ], frame_id = "map"):
+                      pos=[-0.169913589954, -1.4194881916, 0],
+                      ori=[0, 0, -0.698143317423, 0.715958035319],
+                      cov=[0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853892326654787], frame_id="map"):
         ps = PoseStamped()
         ps_cov = PoseWithCovarianceStamped()
         ps.pose.position.x = pos[0]
         ps.pose.position.y = pos[1]
-        ps.pose.position.z = 0
+        ps.pose.position.z = pos[2]
+        ps.pose.orientation.x = ori[0]
+        ps.pose.orientation.y = ori[1]
+        ps.pose.orientation.z = ori[2]
+        ps.pose.orientation.w = ori[3]
         ps.header.frame_id = frame_id
         ps.header.stamp = rospy.get_rostime()
         ps_cov.header = ps.header
@@ -33,9 +34,8 @@ class Navigation:
 
         self.ps_cov_pub.publish(ps_cov)
 
+    def movebase_client(self, floor=2, frame_id="map"):
 
-    def movebase_client(self, floor=2, frame_id = "map"):
-        
         goal = MoveBaseGoal()
         goal.target_pose.header.frame_id = frame_id
         goal.target_pose.header.stamp = rospy.Time.now()
@@ -58,14 +58,12 @@ class Navigation:
             return self.client.get_result()
 
 
-# If the python node is executed as main process (sourced directly)
 if __name__ == '__main__':
     try:
-        # Initializes a rospy node to let the SimpleActionClient publish and subscribe
         rospy.init_node('set_goal')
         move = Navigation()
         move.set_init_pose()
-        rospy.sleep(3)
+        # rospy.sleep(10)
         result = move.movebase_client()
         # r = rospy.Rate(3) # 10hz
         # while result != actionlib.SimpleGoalState.DONE:

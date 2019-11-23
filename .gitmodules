@@ -1,6 +1,6 @@
 [submodule "ros-keyboard"]
 	path = ros-keyboard
-	url = https://github.com/lrse/ros-keyboard
+	url = https://github.com/lrse/ros-keyboard.git
 [submodule "rplidar_ros"]
 	path = rplidar_ros
-	url = https://github.com/robopeak/rplidar_ros    
+	url = https://github.com/robopeak/rplidar_ros.git

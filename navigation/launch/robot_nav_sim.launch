@@ -31,5 +31,5 @@
 	<node pkg="roborts_planning" type="vel_converter" name="vel_converter_node" respawn="false" />
 	<node pkg="navigation" type="set_goal.py" name="set_goal" respawn="false" />
 	<!-- Run the rviz -->
-	<!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find navigation)/rviz/debug.rviz" /> -->
+	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find navigation)/rviz/debug.rviz" />
 </launch>

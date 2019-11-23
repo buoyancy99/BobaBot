@@ -9,7 +9,7 @@ TrajectoryPlannerROS:
   acc_lim_y: 2.5
 
   holonomic_robot: true
-  occdist_scale: 0.001
+  occdist_scale: 0.01
   global_frame_id: map
 
   
