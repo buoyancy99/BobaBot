@@ -1,7 +1,7 @@
 <launch>
     <master auto="start" />
         <include file="$(find navigation)/launch/robot_activate.launch" />
-	<arg name="map" default="SDH2" />
+	<arg name="map" default="SDH_Combined_floorplan" />
 	<param name="/use_sim_time" value="false" />
 	<!-- Load parameters for localization node -->
 	<!--

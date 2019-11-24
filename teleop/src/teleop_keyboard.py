@@ -14,6 +14,8 @@ class Switch:
         self.cmd_vel_keyboard = TwistAccel();
         self.pub_gimbal_angle = rospy.Publisher('cmd_gimbal_angle', GimbalAngle, queue_size=1)
         self.cmd_gimbal_keyboard = GimbalAngle();
+        self.cmd_gimbal_keyboard.yaw_mode = 1
+        self.cmd_gimbal_keyboard.pitch_mode = 1
         self.cam_sel = rospy.Publisher('/camera_selection', String, queue_size=1)
 
 
@@ -65,9 +67,9 @@ class Switch:
         elif key.code == Key.KEY_s:
             self.cmd_gimbal_keyboard.pitch_angle = -1
         elif key.code == Key.KEY_q:
-            self.cmd_gimbal_keyboard.yaw_angle = 1
-        elif key.code == Key.KEY_e:
             self.cmd_gimbal_keyboard.yaw_angle = -1
+        elif key.code == Key.KEY_e:
+            self.cmd_gimbal_keyboard.yaw_angle = 1
         elif key.code == Key.KEY_0:
             self.switch_robot(0)
         elif key.code == Key.KEY_1:
