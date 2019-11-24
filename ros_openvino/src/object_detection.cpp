@@ -107,7 +107,7 @@ void frame_to_blob(const cv::Mat& image,InferRequest::Ptr& analysis,const std::s
 //Callback: a new RGB image is arrived
 void imageCallback(const sensor_msgs::Image::ConstPtr& image_msg){
     cv::Mat color_mat(image_msg->height,image_msg->width,CV_MAKETYPE(CV_8U,3),const_cast<uchar*>(&image_msg->data[0]), image_msg->step);
-    cv::cvtColor(color_mat,color_mat,cv::COLOR_BGR2RGB);
+    // cv::cvtColor(color_mat,color_mat,cv::COLOR_BGR2RGB);
     if(!cf_available){
         color_mat.copyTo(frame_now);
         cf_available=true;
