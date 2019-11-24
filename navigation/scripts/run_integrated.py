@@ -1,32 +1,43 @@
 #!/usr/bin/env python
 import rospy
 import roslaunch
+import threading
 
 from std_msgs.msg import Bool
 from set_goal import Navigation
 
 if __name__ == '__main__':
 
+	launcher_lock = threading.Lock()
 	def elevator_done_cb(msg):
-		if launcher:
-			launcher.shutdown()
+		global launcher
+		global launcher_lock
+		with launcher_lock:
+			if launcher:
+				launcher.shutdown()
+				launcher = None
 
 	def launch(file):
+		global launcher
 		launcher = roslaunch.parent.ROSLaunchParent(uuid, launch_files[file])
 		launcher.start()
 
 	rospy.init_node('SDH_controller', anonymous=True)
-	elevator_sub = rospy.Subscriber('elevator_done', Bool, elevator_done_cb, queue_size=1)
+	elevator_sub = rospy.Subscriber('/elevator_done', Bool, elevator_done_cb)
 	launcher = None
 
 	SDH7_args = ['navigation', 'SDH7_elevator.launch']
 	SDH7_launch_file = roslaunch.rlutil.resolve_launch_arguments(SDH7_args)
+
+	# SDH_7to2_args = ['navigation', 'SDH_7to2.launch']
+	# SDH_7to2_launch_file = roslaunch.rlutil.resolve_launch_arguments(SDH_7to2_args)
 
 	# SDH2_args =
 	# SDH2_launch_file = 
 
 	launch_files = {}
 	launch_files['SDH7'] = SDH7_launch_file
+	# launch_files['SDH_7to2'] = SDH_7to2_launch_file
 	# launch_files['SDH2'] = SDH2_launch_file
 
 	move = Navigation()
@@ -39,4 +50,14 @@ if __name__ == '__main__':
 	uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
 	roslaunch.configure_logging(uuid)
 	launch('SDH7')
+	print('Transferring control to position controller')
+	while not rospy.is_shutdown():
+		r = rospy.Rate(1) # 1hz
+		r.sleep()
+		with launcher_lock:
+			if launcher is None:
+				break
+	print('Congrats on making it to the SDH 7 elevator!')
+
+	
 	rospy.spin()
