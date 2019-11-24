@@ -27,7 +27,9 @@
 		<rosparam file="$(find navigation)/config/base_local_planner_params.yaml" command="load" />
 		<!-- <remap from="cmd_vel" to="move_base_vel"/> -->
 	</node>
+	<!-- Run goal-setting script -->
+	<!-- <node pkg="navigation" type="set_goal.py" name="set_goal" respawn="false" output="screen" /> -->
+	<node pkg="navigation" type="run_integrated.py" name="run_integrated" respawn="false" output="screen" />
 	<!-- Run the rviz -->
-	<node pkg="navigation" type="set_goal.py" name="set_goal" respawn="false" output="screen" />
 	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find navigation)/rviz/debug.rviz" />
 </launch>

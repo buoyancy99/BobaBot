@@ -75,12 +75,12 @@ window
 floorplan
 ( 
   name "SDH Map"
-  bitmap "../maps/SDH_Combined_floorplan.pgm"
-  size [137.9 21.15 1.000]
+  bitmap "../maps/SDH7_floorplan.pgm"
+  size [63.5 19.2 1.000]
   pose [ 0 0 0 0 ]
 )
 
 # throw in a robot
- rmcar(pose [ 12.7215 6.3453 0 15 ] name "rmcar0" color "blue" )
+ rmcar(pose [ 0 0 0 0 ] name "rmcar0" color "blue" )
 # throw in a block for test
  block(pose [ 7.79 3.45 0 0.3 ] color "red"  )
