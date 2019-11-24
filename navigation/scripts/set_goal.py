@@ -31,12 +31,13 @@ class Navigation:
         uint8 RECALLED=8
         uint8 LOST=9
         '''
-        self.reachGoal = data.status.status==3
+        self.reachGoal = data.status.status == 3
 
-    def set_init_pose(self, floor=2,
-                      pos=[-0.169913589954, -1.4194881916, 0],
-                      ori=[0, 0, -0.698143317423, 0.715958035319],
-                      cov=[0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853892326654787], 
+    def set_init_pose(self,
+                      pos=[49.4471969604, -0.919650554657, 0],
+                      ori=[0, 0, -0.13963701777, 0.990202758665],
+                      cov=[0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853892326654787],
+                      floor=2,
                       frame_id="map"):
         ps = PoseStamped()
         ps_cov = PoseWithCovarianceStamped()
@@ -55,16 +56,21 @@ class Navigation:
 
         self.ps_cov_pub.publish(ps_cov)
 
-    def movebase_client(self, floor=2, frame_id="map"):
+    def movebase_client(self, pos=[71.796569824, -6.63157987595, 0], 
+                        ori=[0, 0, -0.0293482956565, 0.999569245997], 
+                        floor=2, frame_id="map"):
 
         goal = MoveBaseGoal()
         goal.target_pose.header.frame_id = frame_id
         goal.target_pose.header.stamp = rospy.Time.now()
         # set goal
-        goal.target_pose.pose.position.x = -16.5200386047
-        goal.target_pose.pose.position.y = 0.95269203186
-        goal.target_pose.pose.orientation.z = -0.695976068805
-        goal.target_pose.pose.orientation.w = 0.718064977318
+        goal.target_pose.pose.position.x = pos[0]
+        goal.target_pose.pose.position.y = pos[1]
+        goal.target_pose.pose.position.z = pos[2]
+        goal.target_pose.pose.orientation.x = ori[0]
+        goal.target_pose.pose.orientation.y = ori[1]
+        goal.target_pose.pose.orientation.z = ori[2]
+        goal.target_pose.pose.orientation.w = ori[3]
 
         # Sends the goal to the action server.
         self.client.send_goal(goal)
@@ -84,8 +90,10 @@ if __name__ == '__main__':
         rospy.init_node('set_goal')
         move = Navigation()
         move.set_init_pose()
-        # rospy.sleep(10)
         result = move.movebase_client()
+       # move.set_init_pose([-16.692276001,1.4976606369,0],[0,0,-0.694762724396,0.719239012283],[0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853892326654787])
+        # rospy.sleep(10)
+        # result = move.movebase_client()
         if move.reachGoal:
             rospy.loginfo("Reached position")
         # r = rospy.Rate(3) # 10hz

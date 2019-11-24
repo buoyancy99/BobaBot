@@ -1,0 +1,262 @@
+SDH2 Left Elevator init
+
+header: 
+  seq: 2
+  stamp: 
+    secs: 144
+    nsecs: 300000000
+  frame_id: "map"
+pose: 
+  pose: 
+    position: 
+      x: -24.0287075043
+      y: 0.230255365372
+      z: 0.0
+    orientation: 
+      x: 0.0
+      y: 0.0
+      z: -0.996524009672
+      w: 0.0833060510826
+  covariance: [0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853892326654787]
+
+
+SDH2 Right Elevator init
+
+header: 
+  seq: 5
+  stamp: 
+    secs: 243
+    nsecs: 200000000
+  frame_id: "map"
+pose: 
+  pose: 
+    position: 
+      x: -23.5742778778
+      y: -2.72276210785
+      z: 0.0
+    orientation: 
+      x: 0.0
+      y: 0.0
+      z: 0.999999305055
+      w: 0.00117893588917
+  covariance: [0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853892326654787]
+
+
+SDH2 Elevator Goal
+
+header: 
+  seq: 13
+  stamp: 
+    secs: 528
+    nsecs: 500000000
+  frame_id: ''
+goal_id: 
+  stamp: 
+    secs: 0
+    nsecs:         0
+  id: ''
+goal: 
+  target_pose: 
+    header: 
+      seq: 13
+      stamp: 
+        secs: 528
+        nsecs: 500000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -27.9189300537
+        y: -1.81838476658
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: 0.0747158241713
+        w: 0.997204866423
+---
+
+SDH Cafe Init
+
+header: 
+  seq: 2
+  stamp: 
+    secs: 585
+    nsecs: 550000000
+  frame_id: "map"
+pose: 
+  pose: 
+    position: 
+      x: -41.6745986938
+      y: 0.399826407433
+      z: 0.0
+    orientation: 
+      x: 0.0
+      y: 0.0
+      z: 0.700056683819
+      w: 0.714087277187
+  covariance: [0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853892326654787]
+
+
+SDH2 Cafe Goal
+
+header: 
+  seq: 2
+  stamp: 
+    secs: 356
+    nsecs: 850000000
+  frame_id: ''
+goal_id: 
+  stamp: 
+    secs: 0
+    nsecs:         0
+  id: ''
+goal: 
+  target_pose: 
+    header: 
+      seq: 2
+      stamp: 
+        secs: 356
+        nsecs: 850000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: -41.6934051514
+        y: 0.955679893494
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: -0.697023499142
+        w: 0.717048284039
+
+------------------------------------------------------------------------------------
+
+SDH7 meeting room init 
+
+header: 
+  seq: 1
+  stamp: 
+    secs: 101
+    nsecs:         0
+  frame_id: "map"
+pose: 
+  pose: 
+    position: 
+      x: 49.4471969604
+      y: -0.919650554657
+      z: 0.0
+    orientation: 
+      x: 0.0
+      y: 0.0
+      z: -0.13963701777
+      w: 0.990202758665
+  covariance: [0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853892326654787]
+
+SDH7 meeting room goal
+
+header: 
+  seq: 14
+  stamp: 
+    secs: 703
+    nsecs: 700000000
+  frame_id: ''
+goal_id: 
+  stamp: 
+    secs: 0
+    nsecs:         0
+  id: ''
+goal: 
+  target_pose: 
+    header: 
+      seq: 14
+      stamp: 
+        secs: 703
+        nsecs: 700000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: 50.3829154968
+        y: -1.10352230072
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: -0.227132640329
+        w: 0.973863832215
+
+SDH7 Left Elevator init
+
+header: 
+  seq: 4
+  stamp: 
+    secs: 1157
+    nsecs: 400000000
+  frame_id: "map"
+pose: 
+  pose: 
+    position: 
+      x: 75.3976593018
+      y: -5.27961111069
+      z: 0.0
+    orientation: 
+      x: 0.0
+      y: 0.0
+      z: 0.998483177673
+      w: 0.0550576416522
+  covariance: [0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853892326654787]
+
+
+SDH7 Right Elevator init
+
+header: 
+  seq: 5
+  stamp: 
+    secs: 1194
+    nsecs: 450000000
+  frame_id: "map"
+pose: 
+  pose: 
+    position: 
+      x: 75.1541824341
+      y: -8.19127941132
+      z: 0.0
+    orientation: 
+      x: 0.0
+      y: 0.0
+      z: 0.999481953048
+      w: 0.0321842435258
+  covariance: [0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853892326654787]
+
+
+SDH7 Elevator Goal
+
+header: 
+  seq: 7
+  stamp: 
+    secs: 281
+    nsecs: 350000000
+  frame_id: ''
+goal_id: 
+  stamp: 
+    secs: 0
+    nsecs:         0
+  id: ''
+goal: 
+  target_pose: 
+    header: 
+      seq: 7
+      stamp: 
+        secs: 281
+        nsecs: 350000000
+      frame_id: "map"
+    pose: 
+      position: 
+        x: 71.7965698242
+        y: -6.63157987595
+        z: 0.0
+      orientation: 
+        x: 0.0
+        y: 0.0
+        z: -0.0293482956565
+        w: 0.999569245997
+

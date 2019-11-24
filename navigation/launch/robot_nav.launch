@@ -26,5 +26,6 @@
 		<rosparam file="$(find navigation)/config/base_local_planner_params.yaml" command="load" />
 	</node>
 	<!-- Run the rviz -->
+	<node pkg="navigation" type="set_goal.py" name="set_goal" respawn="false" output="screen" />
 	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find navigation)/rviz/debug.rviz" />
 </launch>
