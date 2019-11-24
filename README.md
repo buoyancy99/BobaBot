@@ -36,3 +36,56 @@ Launch file : robot_activate.launch and robot_nav.launch (for simulation with st
 Align the robot with 2D pose estimate and set the goal with 2D set goal, also can set goal with http://wiki.ros.org/navigation/Tutorials/SendingSimpleGoals  
 Launch robot_activate.launch first and then robot_nav.launch
 
+
+
+## Elevater Utils
+
+Requirements:
+
+-cv2, cv_bridge
+
+### Elevator door detection
+
+This use optic flow for detecting which elevator door opens. Robot must stay still to use, with 2 elevator doors in the frame.
+
+To run:
+
+```bash
+rosrun elevator_utils door_detection
+```
+
+To get the value. 
+
+0: no open door
+
+1: left door open
+
+2: right door open
+
+```python
+def door_detection_callback(door_value):
+  ...
+  
+rospy.Subscriber("elevator_door_open", Int8, door_detection_callback)
+```
+
+Todo:
+
+Eliminate human movement through human detections
+
+
+#Voice Recognition
+
+Packages Needed: In requirements.txt inside voice_utils
+
+###Elevator Speech
+Use to call human to press button:
+Use rosrun sound_play Trial.py
+If human found inside elevator:
+Use rosrun sound_play Trial2.py
+
+###Speech Recognition Part
+
+Voice recognition stuff is in recognizer.py which is written as a ROS service such that it can read input from mic and publish back to the node.
+
+rosrun sound_play recog.py
