@@ -1,8 +1,0 @@
-This is the structure for the the Speech Recognition Part. All the Boba stuff is in recognizer.py which I need to make into a ROS package, probably will using Bouyan's laptop cause I need windows to do it. 
-
-The detection for the Boba part I'm still delaying working on b/c I want to ask about the project.
-
-Required Packages: in requirements.txt
-
-Direct instructions to play sound using ROS:
-rosrun sound_play say.py 'Hello world'
