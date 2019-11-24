@@ -13,6 +13,20 @@ source /opt/intel/openvino/bin/setupvars.sh
 ```
 The path to your setupvars.sh may be different.
 
+*install camera files 
+```
+git clone https://github.com/slightech/MYNT-EYE-D-SDK.git ~/Libraries/MYNT-EYE-D-SDK
+cd ~/Libraries/MYNT-EYE-D-SDK
+make init
+make all
+sudo make install
+```
+if there is error about header not found
+```
+cp ~/MYNT-EYE-D-SDK/wrappers/ros/devel/include/mynteye_wrapper_d/*  
+~/PATH_TO_BOBABOT/devel/include/mynteye_wrapper_d
+```
+
 ## Navigation
 http://wiki.ros.org/navigation/Tutorials/RobotSetup#Navigation_Stack_Setup
 Dependencies: sudo apt install ros-melodic-navigation
