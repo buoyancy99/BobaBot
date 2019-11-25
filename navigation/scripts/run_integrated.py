@@ -26,7 +26,7 @@ if __name__ == '__main__':
 	elevator_sub = rospy.Subscriber('/elevator_done', Bool, elevator_done_cb)
 	launcher = None
 
-	SDH7_args = ['navigation', 'SDH7_elevator.launch']
+	SDH7_args = ['navigation', 'SDH7_enter_elevator.launch']
 	SDH7_launch_file = roslaunch.rlutil.resolve_launch_arguments(SDH7_args)
 
 	# SDH_7to2_args = ['navigation', 'SDH_7to2.launch']
@@ -41,12 +41,14 @@ if __name__ == '__main__':
 	# launch_files['SDH2'] = SDH2_launch_file
 
 	move = Navigation()
-
+	raw_input("Tell me when to start")
 	# SDH7 start navigation
 	move.set_init_pose(pos=[24.7214736938,6.34529781342,0],ori=[0,0,0.0795551282507,0.996830467817],cov=[0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853892326654787])
-	result = move.movebase_client(pos=[49.509576416,5.28544282913,0],ori=[0,0,0.0123519308175,0.999923711993])
+	result = move.movebase_client(pos=[50.009576416,4.13174282913,0],ori=[0,0,0.0123519308175,0.999923711993])
 
 	# Start SDH 7 Elevator script
+	# Uncomment below for unit testing 7th floor elevator.
+	# move.set_init_pose(pos=[50.009576416,4.13174282913,0],ori=[0,0,0.0123519308175,0.999923711993],cov=[0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853892326654787])
 	uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
 	roslaunch.configure_logging(uuid)
 	launch('SDH7')

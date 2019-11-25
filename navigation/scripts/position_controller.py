@@ -45,9 +45,9 @@ class Position_Controller:
 
 		self.prev = None
 
-		self.max_xvel = .5 # Meters /sec
-		self.max_yvel = .5 # Meters /sec 
-		self.max_yaw  = .5 # radians sec
+		self.max_xvel = 1. # Meters /sec
+		self.max_yvel = 1. # Meters /sec 
+		self.max_yaw  = 1.5 # radians sec
  
 # =========== ROS Update Functions =========================================
 	def pub_stop(self, msg):
@@ -71,6 +71,7 @@ class Position_Controller:
 
 	def controller_cb(self,event):
 		if not self.received_odom or not self.received_goal:
+			self.publish_command.publish(self.stop_cmd)
 			return
 
 		# print('Update State', self.state.linear.x, self.state.linear.y, self.state.angular.z)		
