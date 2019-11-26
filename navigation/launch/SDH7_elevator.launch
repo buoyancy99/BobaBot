@@ -1,9 +1,0 @@
-<launch>
-    <master auto="start" />
-	<param name="/use_sim_time" value="false" />
-	<!-- Run manual position controller -->
-	<node pkg="navigation" type="position_controller.py" name="position_controller" respawn="false" output="screen"/>
-
-	<!-- Run SDH7 elevator control logic -->
-	<node pkg="navigation" type="SDH7_elevator.py" name="SDH7_elevator" respawn="false" output="screen"/> 
-</launch>
