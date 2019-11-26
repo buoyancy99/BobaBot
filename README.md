@@ -51,7 +51,7 @@ This use optic flow for detecting which elevator door opens. Robot must stay sti
 To run:
 
 ```bash
-rosrun elevator_utils door_detection
+rosrun elevator_utils elevator_detection
 ```
 
 To get the value. 
@@ -72,6 +72,32 @@ rospy.Subscriber("elevator_door_open", Int8, door_detection_callback)
 Todo:
 
 Eliminate human movement through human detections
+
+### Elevator floor AR tag marker detection
+
+To run:
+
+```bash
+rosrun elevator_utils elevator_detection
+```
+
+To get the value. 
+
+For each floor, binary int for the detection of floor
+
+```python
+def floor2_detection_callback(door_value):
+  #0 or 1 for the floor
+	return
+  
+def floor7_detection_callback(door_value):
+  ...
+  
+rospy.Subscriber("floor2_value", Int8, floor2_detection_callback)
+rospy.Subscriber("floor7_value", Int8, floor7_detection_callback)
+```
+
+
 
 
 ##Speech
