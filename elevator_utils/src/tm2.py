@@ -3,7 +3,7 @@ import sys
 import numpy as np
 import time
 import cv2
-import imutils
+#import imutils
 
 major_ver, minor_ver, subminor_ver = (cv2.__version__).split('.')
 print(major_ver, minor_ver, subminor_ver)

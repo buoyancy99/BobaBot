@@ -3,13 +3,13 @@ import sys
 import numpy as np
 import time
 import cv2
-import imutils
+#import imutils
 
 major_ver, minor_ver, subminor_ver = (cv2.__version__).split('.')
 print(major_ver, minor_ver, subminor_ver)
 
 
-MIN_MATCH_COUNT = 10
+MIN_MATCH_COUNT = 15
 
 def fm(img1, img2):
     # Initiate SIFT detector
@@ -34,21 +34,23 @@ def fm(img1, img2):
             good.append(m)
 
     if len(good)>MIN_MATCH_COUNT:
-        src_pts = np.float32([ kp1[m.queryIdx].pt for m in good ]).reshape(-1,1,2)
-        dst_pts = np.float32([ kp2[m.trainIdx].pt for m in good ]).reshape(-1,1,2)
+        # src_pts = np.float32([ kp1[m.queryIdx].pt for m in good ]).reshape(-1,1,2)
+        # dst_pts = np.float32([ kp2[m.trainIdx].pt for m in good ]).reshape(-1,1,2)
 
-        M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC,5.0)
-        #matchesMask = mask.ravel().tolist()
+        # M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC,5.0)
+        # #matchesMask = mask.ravel().tolist()
 
-        h,w = img1[:,:,0].shape
-        pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2)
-        dst = cv2.perspectiveTransform(pts,M)
+        # h,w = img1[:,:,0].shape
+        # pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2)
+        # dst = cv2.perspectiveTransform(pts,M)
 
-        img2 = cv2.polylines(img2,[np.int32(dst)],True,255,3, cv2.LINE_AA)
+        # img2 = cv2.polylines(img2,[np.int32(dst)],True,255,3, cv2.LINE_AA)
 
+        print('Floor!')
     else:
         print("Not enough matches are found - %d/%d" % (len(good),MIN_MATCH_COUNT))
         #matchesMask = None
+        return
 
     #print(mask.shape)
 
@@ -231,7 +233,7 @@ if __name__ == '__main__':
     #button = cv2.imread('button.png')[:,:,0]
  
     # Read video
-    video = cv2.VideoCapture(0)
+    video = cv2.VideoCapture(-1)
     
  
     # Exit if video not opened.
@@ -256,6 +258,7 @@ if __name__ == '__main__':
     button = frame[int(r[1]):int(r[1]+r[3]), int(r[0]):int(r[0]+r[2])]
     button = edge(button)
     #cv2.imshow("bbox", button)
+    cv2.imwrite('marker0.png',button)
     print(button.shape)
  
     # # Initialize tracker with first frame and bounding box
@@ -264,6 +267,7 @@ if __name__ == '__main__':
     prev_loc = None
     while True:
         # Read a new frame
+
         ok, frame = video.read()
         if not ok:
             break
@@ -284,7 +288,10 @@ if __name__ == '__main__':
             # p2 = (int(bbox[0] + bbox[2]), int(bbox[1] + bbox[3]))
             # cv2.rectangle(frame, p1, p2, (255,0,0), 2, 1)
             #prev_loc = tm(frame, button, prev_loc)
-            fm(button, frame)
+            try:
+                fm(button, frame)
+            except:
+                continue
             
         else :
             # Tracking failure

@@ -14,7 +14,9 @@ prev_frame = []
 
 def run_detection():
     pub = rospy.Publisher('elevator_door_open', Int8, queue_size=10)
-    rospy.init_node('door_detector')
+    pub_floor2 = rospy.Publisher('floor2_value', Int8, queue_size=10)
+    pub_floor7 = rospy.Publisher('floor7_value', Int8, queue_size=10)
+    rospy.init_node('elevator_detector')
     #rate = rospy.Rate(10)
 
     bridge = CvBridge()
@@ -121,6 +123,52 @@ def run_detection():
         i, j = k // m, k % m
         return j, i
 
+    MIN_MATCH_COUNT = 15
+
+    marker0 = cv2.imread('marker0.png')
+
+    def fm(img1, img2):
+        # Initiate SIFT detector
+        sift = cv2.xfeatures2d.SURF_create()
+
+        # find the keypoints and descriptors with SIFT
+        kp1, des1 = sift.detectAndCompute(img1,None)
+        kp2, des2 = sift.detectAndCompute(img2,None)
+
+        FLANN_INDEX_KDTREE = 0
+        index_params = dict(algorithm = FLANN_INDEX_KDTREE, trees = 5)
+        search_params = dict(checks = 50)
+
+        flann = cv2.FlannBasedMatcher(index_params, search_params)
+
+        matches = flann.knnMatch(des1,des2,k=2)
+
+        # store all the good matches as per Lowe's ratio test.
+        good = []
+        for m,n in matches:
+            if m.distance < 0.7*n.distance:
+                good.append(m)
+
+        if len(good)>MIN_MATCH_COUNT:
+            # src_pts = np.float32([ kp1[m.queryIdx].pt for m in good ]).reshape(-1,1,2)
+            # dst_pts = np.float32([ kp2[m.trainIdx].pt for m in good ]).reshape(-1,1,2)
+
+            # M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC,5.0)
+            # #matchesMask = mask.ravel().tolist()
+
+            # h,w = img1[:,:,0].shape
+            # pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2)
+            # dst = cv2.perspectiveTransform(pts,M)
+
+            # img2 = cv2.polylines(img2,[np.int32(dst)],True,255,3, cv2.LINE_AA)
+
+            print('Floor!')
+            return 1
+        else:
+            print("Not enough matches are found - %d/%d" % (len(good),MIN_MATCH_COUNT))
+            #matchesMask = None
+            return 0
+
     def image_callback(img_msg):
         try:
             cv_image = bridge.imgmsg_to_cv2(img_msg, "passthrough")
@@ -169,6 +217,9 @@ def run_detection():
         # print(cv_image.shape)
         #cv_image = img_fill(cv_image, 150)
         cv2.imshow("door_detector", cv_image)
+
+        pub_floor2.publish(fm(marker0, cv_image))
+        #pub_floor7.publish(fm(marker7, cv_image))
 
         
         k = cv2.waitKey(3)
