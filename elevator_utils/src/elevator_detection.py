@@ -6,13 +6,53 @@ from std_msgs.msg import Int8
 import cv2
 from cv_bridge import CvBridge, CvBridgeError
 import numpy as np
+import copy
 
 max_depth_loc = None
 img_buffer = np.zeros((4, 720, 1280))
 img_count = 0
 prev_frame = []
 
-def run_detection():
+MIN_MATCH_COUNT = 5
+marker0 = cv2.imread('~/Projects/BobaBot/src/elevator_utils/src/marker0.png')
+
+# Generate contours to detect corners of the tag
+def contour_generator(frame):
+    test_img1 = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    test_blur = cv2.GaussianBlur(test_img1, (5, 5), 0)
+    edge = cv2.Canny(test_blur, 75, 200)
+    edge1 = copy.copy(edge)
+    contour_list = list()
+
+    r, cnts, h = cv2.findContours(edge1, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+    index = list()
+    for hier in h[0]:
+        if hier[3] != -1:
+            index.append(hier[3])
+
+    # loop over the contours
+    for c in index:
+        peri = cv2.arcLength(cnts[c], True)
+        approx = cv2.approxPolyDP(cnts[c], 0.02 * peri, True)
+
+        if len(approx) > 4:
+            peri1 = cv2.arcLength(cnts[c - 1], True)
+            corners = cv2.approxPolyDP(cnts[c - 1], 0.02 * peri1, True)
+            contour_list.append(corners)
+
+    new_contour_list = list()
+    for contour in contour_list:
+        if len(contour) == 4:
+            new_contour_list.append(contour)
+    final_contour_list = list()
+    for element in new_contour_list:
+        if cv2.contourArea(element) < 2500:
+            final_contour_list.append(element)
+
+    return final_contour_list
+
+def run_detection(args):
     pub = rospy.Publisher('elevator_door_open', Int8, queue_size=10)
     pub_floor2 = rospy.Publisher('floor2_value', Int8, queue_size=10)
     pub_floor7 = rospy.Publisher('floor7_value', Int8, queue_size=10)
@@ -66,7 +106,7 @@ def run_detection():
         cv2.imshow('optic_flow',rgb)
         k = cv2.waitKey(30) & 0xff
         #if k == 27:
-        #    break
+        #    breakmarker0
         if k == ord('s'):
             cv2.imwrite('opticalfb.png',frame2)
             cv2.imwrite('opticalhsv.png',rgb)
@@ -111,7 +151,7 @@ def run_detection():
         # Invert floodfilled image
         im_floodfill_inv = cv2.bitwise_not(im_floodfill)
 
-        # Combine the two images to get the foreground.
+        # Combine the two images to get the foregroufm(marker0, cv_image)nd.
         fill_image = im_th | im_floodfill_inv
 
         return fill_image 
@@ -123,11 +163,10 @@ def run_detection():
         i, j = k // m, k % m
         return j, i
 
-    MIN_MATCH_COUNT = 15
 
-    marker0 = cv2.imread('marker0.png')
 
     def fm(img1, img2):
+        global MIN_MATCH_COUNT
         # Initiate SIFT detector
         sift = cv2.xfeatures2d.SURF_create()
 
@@ -195,7 +234,7 @@ def run_detection():
 
         cv2.imshow("door_depth", cv_image)
 
-    def color_image_callback(img_msg):
+    def color_image_callback(img_msg, args):
         try:
             cv_image = bridge.imgmsg_to_cv2(img_msg, "passthrough")
         except CvBridgeError, e:
@@ -206,7 +245,9 @@ def run_detection():
         #print(max_depth_loc)
         #cv_image = cv2.cvtColor(cv_image, cv2.COLOR_GRAY2RGB)
         #cv_image = np.zeros(cv_image.shape)
-        door_value = optic_flow(cv_image)
+        door_value = None
+        #door_value = optic_flow(cv_image)
+        
         if door_value is not None:
             print(door_value)
             pub.publish(door_value)
@@ -217,8 +258,17 @@ def run_detection():
         # print(cv_image.shape)
         #cv_image = img_fill(cv_image, 150)
         cv2.imshow("door_detector", cv_image)
-
-        pub_floor2.publish(fm(marker0, cv_image))
+        marker0 = args[0]
+        marker0_2 = args[1]
+        fm(marker0_2, cv_image)
+        #floor_value = max(fm(marker0, cv_image), fm(marker0_2, cv_image))
+        #print(floor_value)
+        # r = cv2.selectROI(cv_image, False)
+        # #button = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        # marker0 = cv_image[int(r[1]):int(r[1]+r[3]), int(r[0]):int(r[0]+r[2])]
+        # cv2.imwrite( 'mynteye_marker0_3.png', marker0)
+        # #print(len(contour_generator(marker0)))
+        #pub_floor2.publish(floor_value)
         #pub_floor7.publish(fm(marker7, cv_image))
 
         
@@ -229,11 +279,14 @@ def run_detection():
 
     #d = rospy.Subscriber("/mynteye/depth/image_raw", Image, depth_image_callback)
     
-    color_image = rospy.Subscriber("/mynteye/left/image_color", Image, color_image_callback)
+    color_image = rospy.Subscriber("/mynteye/left/image_color", Image, color_image_callback, args)
 
 
     while not rospy.is_shutdown():
         rospy.spin()
 
 if __name__ == "__main__":
-    run_detection()
+    marker0 = cv2.imread('/home/boyuan/Projects/BobaBot/src/elevator_utils/src/mynteye_marker0_2.png')
+    marker0_2 = cv2.imread('/home/boyuan/Projects/BobaBot/src/elevator_utils/src/mynteye_marker0_3.png')
+    print(marker0.shape)
+    run_detection((marker0, marker0_2))

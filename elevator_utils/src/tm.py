@@ -3,11 +3,48 @@ import sys
 import numpy as np
 import time
 import cv2
+import copy
 #import imutils
 
 major_ver, minor_ver, subminor_ver = (cv2.__version__).split('.')
 print(major_ver, minor_ver, subminor_ver)
 
+
+# Generate contours to detect corners of the tag
+def contour_generator(frame):
+    test_img1 = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    test_blur = cv2.GaussianBlur(test_img1, (5, 5), 0)
+    edge = cv2.Canny(test_blur, 75, 200)
+    edge1 = copy.copy(edge)
+    contour_list = list()
+
+    r, cnts, h = cv2.findContours(edge1, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+    index = list()
+    for hier in h[0]:
+        if hier[3] != -1:
+            index.append(hier[3])
+
+    # loop over the contours
+    for c in index:
+        peri = cv2.arcLength(cnts[c], True)
+        approx = cv2.approxPolyDP(cnts[c], 0.02 * peri, True)
+
+        if len(approx) > 4:
+            peri1 = cv2.arcLength(cnts[c - 1], True)
+            corners = cv2.approxPolyDP(cnts[c - 1], 0.02 * peri1, True)
+            contour_list.append(corners)
+
+    new_contour_list = list()
+    for contour in contour_list:
+        if len(contour) == 4:
+            new_contour_list.append(contour)
+    final_contour_list = list()
+    for element in new_contour_list:
+        if cv2.contourArea(element) < 2500:
+            final_contour_list.append(element)
+
+    return final_contour_list
 
 MIN_MATCH_COUNT = 15
 
@@ -47,6 +84,7 @@ def fm(img1, img2):
         # img2 = cv2.polylines(img2,[np.int32(dst)],True,255,3, cv2.LINE_AA)
 
         print('Floor!')
+        print(len(good))
     else:
         print("Not enough matches are found - %d/%d" % (len(good),MIN_MATCH_COUNT))
         #matchesMask = None
@@ -233,7 +271,7 @@ if __name__ == '__main__':
     #button = cv2.imread('button.png')[:,:,0]
  
     # Read video
-    video = cv2.VideoCapture(-1)
+    video = cv2.VideoCapture(0)
     
  
     # Exit if video not opened.
@@ -242,7 +280,7 @@ if __name__ == '__main__':
         sys.exit()
  
     # Read first frame.
-    for i in range(5):    
+    for i in range(20):    
         ok, frame = video.read()
         if not ok:
             break
@@ -257,8 +295,9 @@ if __name__ == '__main__':
     #button = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     button = frame[int(r[1]):int(r[1]+r[3]), int(r[0]):int(r[0]+r[2])]
     button = edge(button)
-    #cv2.imshow("bbox", button)
-    cv2.imwrite('marker0.png',button)
+    cv2.imshow("bbox", button)
+    cv2.imwrite('floor2_left_fix.png',button)
+    #button = cv2.imread('floor7_left.png')
     print(button.shape)
  
     # # Initialize tracker with first frame and bounding box
@@ -290,11 +329,12 @@ if __name__ == '__main__':
             #prev_loc = tm(frame, button, prev_loc)
             try:
                 fm(button, frame)
+                #print(len(contour_generator(frame)))
             except:
                 continue
             
         else :
-            # Tracking failure
+            # Tracking failurecontour_generator
             cv2.putText(frame, "Tracking failure detected", (100,80), cv2.FONT_HERSHEY_SIMPLEX, 0.75,(0,0,255),2)
  
         # Display tracker type on frame
