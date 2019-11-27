@@ -5,6 +5,8 @@ from geometry_msgs.msg import Twist
 from std_msgs.msg import Bool
 from set_goal import Navigation
 
+import time
+
 class WaypointPublisher():
     def __init__(self, path):
         self.done = False
@@ -28,7 +30,15 @@ class WaypointPublisher():
 
 if __name__ == '__main__':
     rospy.init_node('waypoint_publisher')
+
+    elevator = None
+    wait_open = 3
+    def elevator_cb(msg):
+        if msg.data == 7:
+            global elevator
+            elevator = "right"
     done_pub = rospy.Publisher('/elevator_done', Bool, queue_size=1)
+    rospy.Subscriber('/elevator/detection', Int32, queue_size=1)
 
     # Teleportation if using sim
     if rospy.get_param('use_sim_time') == True:
@@ -43,11 +53,21 @@ if __name__ == '__main__':
     while not wp_pub.done and not rospy.is_shutdown():
         r = rospy.Rate(10)
         r.sleep()
-    elevator = None
+
     path = []
-    while elevator != "left" and elevator != "right":
-        elevator = raw_input("Which elevator opened?: ")
-        if elevator == "left":
+    stop_wait = time.time() + wait_open
+    while not rospy.is_shutdown():
+        r = rospy.Rate(3) # 1hz
+        r.sleep()
+        if elevator == "right":
+            inside1 = Twist()
+            inside1.linear.x, inside1.linear.y = 53.2, 3.9
+            inside2 = Twist()
+            inside2.linear.x, inside2.linear.y, inside2.angular.z = 53.2, 3.9, 3.14
+            path = [inside1, inside2]
+            break
+        elif time.time() >= wait_open:
+            # left if right didn't open
             outside = Twist()
             outside.linear.x, outside.linear.y = 51.5, 6.8
             inside1 = Twist()
@@ -55,12 +75,7 @@ if __name__ == '__main__':
             inside2 = Twist()
             inside2.linear.x, inside2.linear.y, inside2.angular.z = 53.2, 7.0, 3.14
             path = [outside, inside1, inside2]
-        else:
-            inside1 = Twist()
-            inside1.linear.x, inside1.linear.y = 53.2, 3.9
-            inside2 = Twist()
-            inside2.linear.x, inside2.linear.y, inside2.angular.z = 53.2, 3.9, 3.14
-            path = [inside1, inside2]
+            break
     wp_pub = WaypointPublisher(path)
     while not wp_pub.done and not rospy.is_shutdown():
         r = rospy.Rate(10)

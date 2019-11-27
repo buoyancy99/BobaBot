@@ -5,4 +5,7 @@
 
 	<!-- Run SDH7 elevator control logic -->
 	<node pkg="navigation" type="SDH7_enter_elevator.py" name="SDH7_elevator" respawn="false" output="screen"/> 
+	
+	<!-- Lidar elevator detection -->
+	<node pkg="elevator_utils" type="lidar_elevator_detection.py" name="elevator_detection" respawn="false" output="screen"/>
 </launch>

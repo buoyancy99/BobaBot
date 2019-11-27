@@ -39,7 +39,7 @@ class LidarElevatorDetector:
 		# print(inside)
 		votes = np.sum(2 == np.sum(inside, axis=1))
 		if votes >= self.vote_thresh:
-			self.publish_elevator.publish(Int32(data=votes))
+			self.publish_elevator.publish(Int32(data=7))
 
 if __name__ == '__main__':
 	rospy.init_node('elevator_detector')
