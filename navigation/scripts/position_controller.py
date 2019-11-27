@@ -7,19 +7,22 @@ from geometry_msgs.msg import Twist
 from geometry_msgs.msg import PoseWithCovarianceStamped
 from roborts_msgs.msg import TwistAccel
 from std_msgs.msg import Bool
+from sensor_msgs.msg import LaserScan
 
 from tf.transformations import euler_from_quaternion
 
 class Position_Controller:
 	def __init__(self):
 		print('Initializing position controller')
-
+		self.shape = np.array([.25, .2]) # half of the x, y dimensions
+		self.refresh_rate = .1 # assume 20hz updates. 
 		# First set the inital variables
 		self.received_goal = False
 		self.received_odom = False
 		self.state = Twist()
 		self.last_state = Twist()
 		self.goal_position = Twist()
+		self.last_scan = None
 
 		# Set the publishers and subscribers
 		self.publish_command = rospy.Publisher('/cmd_vel_acc',TwistAccel,queue_size=1)
@@ -27,6 +30,7 @@ class Position_Controller:
 		rospy.Subscriber('/amcl_pose', PoseWithCovarianceStamped, self.update_state)
 		rospy.Subscriber('/goal_position', Twist, self.update_goal_postion)
 		rospy.Subscriber('/elevator_done', Bool, self.pub_stop)
+		rospy.Subscriber('/scan', LaserScan, self.laser_cb)
 		rospy.Timer(rospy.Duration(1/30.0), self.controller_cb)
 		
 		stop = TwistAccel()
@@ -69,7 +73,10 @@ class Position_Controller:
 		
 		self.received_odom = True
 
-	def controller_cb(self,event):
+	def laser_cb(self, scan):
+		self.last_scan = scan
+
+	def controller_cb(self, event):
 		if not self.received_odom or not self.received_goal:
 			self.publish_command.publish(self.stop_cmd)
 			return
