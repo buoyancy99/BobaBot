@@ -14,8 +14,8 @@ from tf.transformations import euler_from_quaternion
 class Position_Controller:
 	def __init__(self):
 		print('Initializing position controller')
-		self.shape = np.array([.25, .2]) # half of the x, y dimensions
-		self.refresh_rate = .1 # assume 20hz updates. 
+		self.shape = np.array([.3, .3]) # half of the x, y dimensions
+		self.refresh_rate = .2 # assume 10hz updates. 
 		# First set the inital variables
 		self.received_goal = False
 		self.received_odom = False
@@ -47,11 +47,16 @@ class Position_Controller:
 		self.Kp_yaw = .5
 		self.Kd_yaw = .2
 
-		self.prev = None
+		self.prev_state = None
+		self.prev_cmd = TwistAccel()
 
 		self.max_xvel = 1. # Meters /sec
 		self.max_yvel = 1. # Meters /sec 
 		self.max_yaw  = 1.5 # radians sec
+
+		# Limit acceleration to mitigate sensor drift
+		self.max_lin_accel = .3 # Meters / (sec*iteration) (Techinically not m/s^2)
+		self.max_ang_accel = .5
  
 # =========== ROS Update Functions =========================================
 	def pub_stop(self, msg):
@@ -79,6 +84,7 @@ class Position_Controller:
 	def controller_cb(self, event):
 		if not self.received_odom or not self.received_goal:
 			self.publish_command.publish(self.stop_cmd)
+			self.prev_cmd = self.stop_cmd
 			return
 
 		# print('Update State', self.state.linear.x, self.state.linear.y, self.state.angular.z)		
@@ -95,14 +101,48 @@ class Position_Controller:
 			self.publish_goal_reached.publish(Bool(data=True))
 			self.received_goal = False
 		
+		cmd_x = self.limit_accel(cmd_x, self.prev_cmd.twist.linear.x, self.max_lin_accel)
+		cmd_y = self.limit_accel(cmd_y, self.prev_cmd.twist.linear.y, self.max_lin_accel)
+		cmd_yaw = self.limit_accel(cmd_yaw, self.prev_cmd.twist.angular.z, self.max_ang_accel)
+
 		cmd_out = TwistAccel()
 		cmd_out.twist.linear.x = cmd_x
 		cmd_out.twist.linear.y = cmd_y
 		cmd_out.twist.angular.z = cmd_yaw
 		# print("Command", cmd_x, cmd_y, cmd_yaw)
-		self.prev = self.state
-		self.publish_command.publish(cmd_out)
-		# self.publish_command.publish(self.stop_cmd)
+		self.prev_state = self.state
+		if not self.check_collision(cmd_out.twist):
+		# if True:
+			self.publish_command.publish(cmd_out)
+		else:
+			self.publish_command.publish(self.stop_cmd)
+
+	def limit_accel(self, cmd, prev_cmd, max_accel):
+		if cmd == 0:
+			return 0
+		if np.sign(cmd) == np.sign(prev_cmd):
+			if abs(cmd) <= abs(prev_cmd):
+				return cmd
+			elif abs(cmd) - abs(prev_cmd) > max_accel:
+				return np.sign(cmd) * (abs(prev_cmd) + max_accel)
+		return cmd
+
+	def check_collision(self, cmd):
+		next_state = np.array([self.state.linear.x + cmd.linear.x * self.refresh_rate, \
+					 self.state.linear.y + cmd.linear.y * self.refresh_rate])
+		upper = next_state + self.shape
+		lower = next_state - self.shape
+
+		scan = self.last_scan
+		angles = self.state.angular.z + np.arange(scan.angle_min, scan.angle_max, scan.angle_increment)
+		ranges = np.array([scan.ranges]).T
+		points = np.array([self.state.linear.x, self.state.linear.y]) + ranges * np.hstack((np.array([np.cos(angles)]).T, np.array([np.sin(angles)]).T))
+		# print(points)
+		inside = np.logical_and((points <= upper), (points >= lower))
+		# print(inside.shape)
+		# print(inside)
+		votes = np.sum(2 == np.sum(inside, axis=1))
+		return votes != 0
 
 	def check_reached(self):
 		threshhold_xy = .01 #Meters
@@ -121,8 +161,8 @@ class Position_Controller:
 		goal = self.goal_position #twist
 		curr_pos = self.state #Twist as well
 		x, y, yaw = curr_pos.linear.x, curr_pos.linear.y, curr_pos.angular.z
-		if self.prev:
-			dx, dy = x - self.prev.linear.x, y - self.prev.linear.y
+		if self.prev_state:
+			dx, dy = x - self.prev_state.linear.x, y - self.prev_state.linear.y
 			dx, dy = dx * np.cos(yaw) + dy * np.sin(yaw), dx * np.sin(yaw) + dy * np.cos(yaw)
 		else:
 			dx, dy = 0, 0
@@ -181,8 +221,8 @@ class Position_Controller:
 		goal_yaw = self.goal_position.angular.z
 		yaw = self.state.angular.z 
 		
-		if self.prev:
-			dyaw = yaw - self.prev.angular.z
+		if self.prev_state:
+			dyaw = yaw - self.prev_state.angular.z
 		else:
 			dyaw = .0
 
