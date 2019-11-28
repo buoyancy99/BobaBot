@@ -53,7 +53,7 @@ def fm(floor_sift, img2, sift, MIN_MATCH_COUNT=15):
 
 
 def to_detect_callback(msg):
-    to_detect = msg
+    to_detect = msg.data
 
 def color_image_callback(img_msg, args):
     try:
@@ -81,7 +81,7 @@ def color_image_callback(img_msg, args):
 
 def run_detection(args):
     pub = rospy.Publisher('floor_value', Int8, queue_size=10)
-    rospy.init_node('elevator_detector')
+    rospy.init_node('floor_detector')
     rate = rospy.Rate(10)
 
     bridge = CvBridge()
