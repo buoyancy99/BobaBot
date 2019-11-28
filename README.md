@@ -73,12 +73,14 @@ Todo:
 
 Eliminate human movement through human detections
 
-### Elevator floor AR tag marker detection
+### Elevator floor detection
+
+This uses the features from floor 7 and floor 2 to detect floors
 
 To run:
 
 ```bash
-rosrun elevator_utils elevator_detection
+rosrun elevator_utils floor_detection
 ```
 
 To get the value. 
@@ -86,15 +88,20 @@ To get the value.
 For each floor, binary int for the detection of floor
 
 ```python
-def floor2_detection_callback(door_value):
+pub = rospy.Publisher('floor_to_detect', Int8, queue_size=10)
+pub.publish(0) #modify this value
+# 0: no floor
+# 1: floor2 when in the left elevator
+# 2: floor2 when in the right elevator
+# 3: floor7 when in the left elevator
+# 4: floor7 when in the right elevator (direction facing the elevator from outside)
+
+def floor_detection_callback(door_value):
   #0 or 1 for the floor
 	return
   
-def floor7_detection_callback(door_value):
-  ...
   
-rospy.Subscriber("floor2_value", Int8, floor2_detection_callback)
-rospy.Subscriber("floor7_value", Int8, floor7_detection_callback)
+rospy.Subscriber("floor_value", Int8, floor_detection_callback)
 ```
 
 
