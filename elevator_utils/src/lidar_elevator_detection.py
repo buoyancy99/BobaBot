@@ -16,23 +16,23 @@ class LidarElevatorDetector:
 	def __init__(self):
 		self.state = Twist()
 		self.scan = LaserScan()
-		self.vote_thresh = 20
-		self.elevator_ul = np.array([55.5, 5.4])
-		self.elevator_lr = np.array([52.8 , 2.55])
+		self.vote_thresh = 4
+		self.elevator_ul = np.array([[58, 5.4]])
+		self.elevator_lr = np.array([[52.8 , 2.55]])
 
 		self.publish_elevator = rospy.Publisher('/elevator/detection', Int32, queue_size=1)
 		rospy.Subscriber('amcl_pose', PoseWithCovarianceStamped, self.update_state)
 		rospy.Subscriber('/scan', LaserScan, self.laser_cb)
 
 	def update_state(self, pose):
-		self.state.linear.x = pose.pose.pose.position.x
-		self.state.linear.y = pose.pose.pose.position.y
-		self.state.angular.z = quat_to_eul(pose.pose.pose.orientation)
+		self.state.linear.x = np.array(pose.pose.pose.position.x)
+		self.state.linear.y = np.array(pose.pose.pose.position.y)
+		self.state.angular.z = np.array(quat_to_eul(pose.pose.pose.orientation))
 
 	def laser_cb(self, scan):
-		angles = self.state.angular.z + np.arange(scan.angle_min, scan.angle_max, scan.angle_increment)
-		ranges = np.array([scan.ranges]).T
-		points = np.array([self.state.linear.x, self.state.linear.y]) + ranges * np.hstack((np.array([np.cos(angles)]).T, np.array([np.sin(angles)]).T))
+		angles = self.state.angular.z + np.pi + np.arange(scan.angle_min, scan.angle_max, scan.angle_increment)
+		ranges = np.array(scan.ranges)[:len(angles), None]
+		points = np.array([self.state.linear.x, self.state.linear.y]) + ranges * np.hstack([np.cos(angles)[:, None], np.sin(angles)[:, None]])
 		# print(points)
 		inside = np.logical_and((points <= self.elevator_ul), (points >= self.elevator_lr))
 		# print(inside.shape)
