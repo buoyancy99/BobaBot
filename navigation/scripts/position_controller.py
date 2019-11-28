@@ -14,7 +14,7 @@ from tf.transformations import euler_from_quaternion
 class Position_Controller:
 	def __init__(self):
 		print('Initializing position controller')
-		self.shape = np.array([.3, .3]) # half of the x, y dimensions
+		self.shape = np.array([.45, .45]) # half of the x, y dimensions
 		self.refresh_rate = .2 # assume 10hz updates. 
 		# First set the inital variables
 		self.received_goal = False
@@ -50,12 +50,12 @@ class Position_Controller:
 		self.prev_state = None
 		self.prev_cmd = TwistAccel()
 
-		self.max_xvel = 1. # Meters /sec
-		self.max_yvel = 1. # Meters /sec 
+		self.max_xvel = .9 # Meters /sec
+		self.max_yvel = .9 # Meters /sec 
 		self.max_yaw  = 1.5 # radians sec
 
 		# Limit acceleration to mitigate sensor drift
-		self.max_lin_accel = .3 # Meters / (sec*iteration) (Techinically not m/s^2)
+		self.max_lin_accel = .5 # Meters / (sec*iteration) (Techinically not m/s^2)
 		self.max_ang_accel = .5
  
 # =========== ROS Update Functions =========================================
@@ -97,9 +97,11 @@ class Position_Controller:
 		errorx, errory, erroryaw = abs(x - goal_x), abs(y - goal_y), abs(yaw - goal_yaw)
 		erroryaw = min(erroryaw, abs(2*np.pi - erroryaw))
 		# print(errorx, errory, erroryaw)
-		if errorx < .1 and errory < .1 and erroryaw < .3 and self.received_goal:
+		if errorx < .15 and errory < .15 and erroryaw < .3 and self.received_goal:
 			self.publish_goal_reached.publish(Bool(data=True))
 			self.received_goal = False
+
+		# print(cmd_x, cmd_y, cmd_yaw)
 		
 		cmd_x = self.limit_accel(cmd_x, self.prev_cmd.twist.linear.x, self.max_lin_accel)
 		cmd_y = self.limit_accel(cmd_y, self.prev_cmd.twist.linear.y, self.max_lin_accel)
@@ -111,7 +113,7 @@ class Position_Controller:
 		cmd_out.twist.angular.z = cmd_yaw
 		# print("Command", cmd_x, cmd_y, cmd_yaw)
 		self.prev_state = self.state
-		if not self.check_collision(cmd_out.twist):
+		if self.last_scan and not self.check_collision(cmd_out.twist):
 		# if True:
 			self.publish_command.publish(cmd_out)
 		else:
@@ -134,8 +136,8 @@ class Position_Controller:
 		lower = next_state - self.shape
 
 		scan = self.last_scan
-		angles = self.state.angular.z + np.arange(scan.angle_min, scan.angle_max, scan.angle_increment)
-		ranges = np.array([scan.ranges]).T
+		angles = self.state.angular.z + np.pi + np.arange(scan.angle_min, scan.angle_max, scan.angle_increment)
+		ranges = np.array([scan.ranges]).T[:len(angles)]
 		points = np.array([self.state.linear.x, self.state.linear.y]) + ranges * np.hstack((np.array([np.cos(angles)]).T, np.array([np.sin(angles)]).T))
 		# print(points)
 		inside = np.logical_and((points <= upper), (points >= lower))
