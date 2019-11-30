@@ -28,15 +28,43 @@ cp ~/MYNT-EYE-D-SDK/wrappers/ros/devel/include/mynteye_wrapper_d/*
 ```
 
 ## Navigation
-http://wiki.ros.org/navigation/Tutorials/RobotSetup#Navigation_Stack_Setup
-Dependencies: sudo apt install ros-melodic-navigation
-For teleop: `git clone https://github.com/lrse/ros-keyboard.git`
+
+TODO: Add launch files for what to do inside elevator (7 to 2, 2 to 7), entering/exiting floor 2, exiting 7. Edit `run_integrated.py` correspondingly. Edit `SDH7_enter_elevator.py` to receive "ding" input.
+
+NOTE: `run_integrated_sim` currently may not work without some editing. If needed, ask Alex for help.
+
 Package name : navigation  
-Launch file : robot_activate.launch and robot_nav.launch (for simulation with stage, just robot_nav_sim.launch)  
+
+http://wiki.ros.org/navigation/Tutorials/RobotSetup#Navigation_Stack_Setup
+
+Dependencies: sudo apt install ros-melodic-navigation
+
+For teleop: `git clone https://github.com/lrse/ros-keyboard.git`
+
+Launch file : robot_nav.launch (for simulation with stage, just robot_nav_sim.launch)  
 Align the robot with 2D pose estimate and set the goal with 2D set goal, also can set goal with http://wiki.ros.org/navigation/Tutorials/SendingSimpleGoals  
-Launch robot_activate.launch first and then robot_nav.launch
 
+`robot_nav.launch`: Loads `SDH_all_floorplan` (found in `maps`) into `map_server`. Launches `amcl`, `move_base`, and `rviz`. Runs `run_integrated.py` (found in `scripts`), which has the high-level logic for operation.
 
+`run_integrated.py`: Broad overview: sets initial poses and goals for `move_base`. Uses the `roslaunch` library for python to launch the elevator logic. In particular, launches `SDH7_enter_elevator.launch` and kills upon receiving a callback that elevator operation is done.
+
+Subscriptions: `/elevator/done`: Upon receiving a message, kills the latest launch file.
+
+`SDH7_enter_elevator.launch`: Runs `position_controller.py`, `SDH7_enter_elevator.py` (both in `scripts`), `lidar_elevator_detection.py` (in `elevator_utils` package). 
+
+`position_controller.py`: Gives commands to the robot given waypoints. Does basic collision avoidance (stopping). Used exclusively for elevator logic. `move_base` controls all other movement.
+
+Subscriptions: Receives pose from `/amcl_pose`, goals from `/goal_position`, `/elevator/done` to know when to stop, and `/scan` for LiDAR scans.
+
+Publishers: `/cmd_vel_acc` for velocity commands, `goal_position_cb` to publish when a goal has been reached.
+
+`SDH7_enter_elevator.py`: Contains general logic of entering the 7th floor elevator.
+
+Subscriptions: `/goal_position_cb` to know when a goal has been reached.
+
+Publishers: `/goal_position` to publish new goals from a list for `position_controller.py` to follow. `/elevator/done` to publish when done so `run_integrated.py` can kill the launch file that spawned this node. 
+
+TODO: `SDH7_exit_elevator.py`, `SDH2_enter_elevator.py`, `SDH2_exit_elevator.py`
 
 ## Elevater Utils
 
@@ -44,9 +72,25 @@ Requirements:
 
 -cv2, cv_bridge
 
-### Elevator door detection
+### Elevator Door Detection
 
-This use optic flow for detecting which elevator door opens. Robot must stay still to use, with 2 elevator doors in the frame.
+TODO: Currently only supports 7th floor.
+
+We use a LiDAR to determine whether or not an elevator door has opened in front of us. This is done by standing in front of the right side elevator and checking if there are enough LiDAR scans from within the elevator for us to believe the door is open. If it is not open for a while after hearing the elevator "ding", we conclude that the left elevator door must have opened.
+
+Outputs:
+Topic: `/elevator/detection`
+Message type: Int32
+Information: 7 if 7th floor elevator detected. 2 if 2nd floor elevator detected. Else, does not publish.
+
+To run:
+
+```bash
+rosrun elevator_utils lidar_elevator_detection.py
+```
+
+NOTE: The rest of "Elevator Door Detection" is deprecated, but is kept since the script is still in the repository.
+This uses optic flow for detecting which elevator door opens. Robot must stay still to use, with 2 elevator doors in the frame.
 
 To run:
 
