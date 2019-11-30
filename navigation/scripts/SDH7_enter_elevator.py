@@ -37,7 +37,7 @@ if __name__ == '__main__':
         if msg.data == 7:
             global elevator
             elevator = "right"
-    done_pub = rospy.Publisher('/elevator_done', Bool, queue_size=1)
+    done_pub = rospy.Publisher('/elevator/done', Bool, queue_size=1)
 
     # Teleportation if using sim
     if rospy.get_param('use_sim_time') == True:

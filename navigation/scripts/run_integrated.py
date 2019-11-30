@@ -23,7 +23,7 @@ if __name__ == '__main__':
 		launcher.start()
 
 	rospy.init_node('SDH_controller', anonymous=True)
-	elevator_sub = rospy.Subscriber('/elevator_done', Bool, elevator_done_cb)
+	elevator_sub = rospy.Subscriber('/elevator/done', Bool, elevator_done_cb)
 	launcher = None
 
 	SDH7_args = ['navigation', 'SDH7_enter_elevator.launch']

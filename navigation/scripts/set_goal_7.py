@@ -89,7 +89,7 @@ class Navigation:
 if __name__ == '__main__':
     try:
         rospy.init_node('set_goal')
-        done_pub = rospy.Publisher('/elevator_done', Bool, queue_size=1)
+        done_pub = rospy.Publisher('/elevator/done', Bool, queue_size=1)
         move = Navigation()
         move.set_init_pose(pos=[24.7214736938,6.34529781342,0],ori=[0,0,0.0795551282507,0.996830467817],cov=[0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853892326654787])
         result = move.movebase_client(pos=[49.509576416,5.28544282913,0],ori=[0,0,0.0123519308175,0.999923711993])

@@ -8,7 +8,7 @@ from set_goal import Navigation
 class WaypointPublisher():
     def __init__(self, path):
         self.wp_pub = rospy.Publisher('/goal_position', Twist, queue_size=1, latch=True)
-        self.done_pub = rospy.Publisher('/elevator_done', Bool, queue_size=1)
+        self.done_pub = rospy.Publisher('/elevator/done', Bool, queue_size=1)
         rospy.Subscriber("/goal_position_cb", Bool, self.wp_publisher_cb)
         self.path = path
         self.wp_publisher()

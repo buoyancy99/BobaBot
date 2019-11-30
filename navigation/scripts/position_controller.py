@@ -33,7 +33,7 @@ class Position_Controller:
 		self.publish_goal_reached = rospy.Publisher('/goal_position_cb', Bool, queue_size=1)
 		rospy.Subscriber('/amcl_pose', PoseWithCovarianceStamped, self.update_state)
 		rospy.Subscriber('/goal_position', Twist, self.update_goal_postion)
-		rospy.Subscriber('/elevator_done', Bool, self.pub_stop)
+		rospy.Subscriber('/elevator/done', Bool, self.pub_stop)
 		rospy.Subscriber('/scan', LaserScan, self.laser_cb)
 		rospy.Timer(rospy.Duration(1/30.0), self.controller_cb)
 		
