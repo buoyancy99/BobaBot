@@ -30,14 +30,18 @@ class LidarElevatorDetector:
 		self.state.angular.z = np.array(quat_to_eul(pose.pose.pose.orientation))
 
 	def laser_cb(self, scan):
+		# Make (N, ) array of angles
 		angles = self.state.angular.z + np.pi + np.arange(scan.angle_min, scan.angle_max, scan.angle_increment)
+		# Make (N, 1) array of ranges
 		ranges = np.array(scan.ranges)[:len(angles), None]
+		# Make (N, 2) array of points
 		points = np.array([self.state.linear.x, self.state.linear.y]) + ranges * np.hstack([np.cos(angles)[:, None], np.sin(angles)[:, None]])
-		# print(points)
+		# Make boolean array of if scan points are within upper-left/lower-right of elevator bounding box.
 		inside = np.logical_and((points <= self.elevator_ul), (points >= self.elevator_lr))
-		# print(inside.shape)
-		# print(inside)
+		# Count number of points within upper-left/lower-right.
 		votes = np.sum(2 == np.sum(inside, axis=1))
+
+		# If more points within boundary than minimum needed, we have detected the 7th floor elevator.
 		if votes >= self.vote_thresh:
 			self.publish_elevator.publish(Int32(data=7))
 
