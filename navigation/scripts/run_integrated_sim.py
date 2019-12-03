@@ -72,13 +72,13 @@ if __name__ == '__main__':
 
 	print('Teleporting to floor 2 elevator')
 
-	# launch('SDH2_exit_elevator')
+	launch('SDH2_exit_elevator')
 	print('Transferring control to position controller')
 	print('Exiting SDH2 elevator')
 	wait_finish()
 	print('Congrats on making it to SDH2!')
 
-	# print('Starting floor 2 move_base')
+	print('Starting floor 2 move_base')
 	launch('SDH2')
 	wait_finish()
 	print('Reached cafe doors!')
