@@ -33,20 +33,18 @@ if __name__ == '__main__':
 
     # Teleportation if using sim
     # if rospy.get_param('use_sim_time') == True:
-    #     move = Navigation()
-    #     move.set_init_pose(pos=[-22.4599304199,0.581747889519,0],ori=[0,0,-0.996569245798,0.0827631459663],cov=[0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853892326654787])
-    #     r = rospy.Rate(1)
-    #     r.sleep()
+    move = Navigation()
+    
+        # r = rospy.Rate(1)
+        # r.sleep()
     path = []
-    
-    
     side = rospy.get_param('/elevator')
     if(side == "left"):
         outside = Twist()
-        outside.linear.x, outside.linear.y, outside.angular.z = -24.079832077, -0.381952285767, 3.14159
+        outside.linear.x, outside.linear.y, outside.angular.z = 51.8222732544, 7.04585456848, 3.14159
     if(side == "right"):
         outside = Twist()
-        outside.linear.x, outside.linear.y, outside.angular.z = -24.079832077, 0.285948038101, 3.14159
+        outside.linear.x, outside.linear.y, outside.angular.z = 51.8222732544, 3.97035646439, 3.14159
     #TODO: wait for callback of elevator open door
     wp_pub = WaypointPublisher([outside])
     rospy.spin()
