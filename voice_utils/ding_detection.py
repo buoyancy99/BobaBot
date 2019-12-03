@@ -9,7 +9,7 @@ import rospy
 import sys
 
 def detection(ding_left, ding_right, is_7=True):
-	pub = rospy.Publisher('ding_detect', Int8, queue_size=10)
+	pub = rospy.Publisher('ding_value', Int8, queue_size=10)
 	rospy.init_node('ding_detector')
 	rate = rospy.Rate(10)
 
