@@ -70,8 +70,8 @@ if __name__ == '__main__':
 	print('Congrats on making it to SDH 2!')
 
 	# Go to cafe
-	result = move.movebase_client(pos=[-49.2158203125,-7.58403015137,0],ori=[0,0,0.708139986808,0.706072063661])
-
+	# result = move.movebase_client(pos=[-49.2158203125,-7.58403015137,0],ori=[0,0,0.708139986808,0.706072063661])
+	result = move.movebase_client(pos=[-42.6,2.064,0],ori=[0,0,-0.6983,0.7158])
 	raw_input("Tell me when to return")
 	
 	# Go back to elevator
