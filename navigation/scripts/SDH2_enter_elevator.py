@@ -30,13 +30,19 @@ class WaypointPublisher():
 
 if __name__ == '__main__':
     rospy.init_node('waypoint_publisher')
-
     elevator = None
+    dinged = False
     wait_open = 3.5
+
     def elevator_cb(msg):
         if msg.data == 2:
             global elevator
             elevator = "right"
+    def ding_detect_cb(msg):
+        if msg.data != 0:
+            global dinged
+            dinged = True
+
     done_pub = rospy.Publisher('/elevator/done', Bool, queue_size=1)
 
     # Teleportation if using sim
@@ -47,7 +53,17 @@ if __name__ == '__main__':
         r.sleep()
 
     # Wait for "ding"/user input before approaching elevator
-    raw_input("Tell me when to approach elevator")
+    # raw_input("Tell me when to approach elevator")
+    rospy.Subscriber("ding_value", Int8, ding_detect_cb)
+    while not rospy.is_shutdown():
+        r = rospy.Rate(10)
+        try:
+            r.sleep()
+        except:
+            pass
+        if dinged:
+            break
+
     outside_right = Twist()
     outside_right.linear.x, outside_right.linear.y, outside_right.angular.z = -24.5, -3.5, 0
     wp_pub = WaypointPublisher([outside_right])
@@ -55,22 +71,12 @@ if __name__ == '__main__':
         r = rospy.Rate(10)
         r.sleep()
 
-    # # Test point to test position controller
-    # test_pt = Twist()
-    # test_pt.linear.x, test_pt.linear.y = 51.5, 6.8
-    # path = [test_pt]
-    # wp_pub = WaypointPublisher(path)
-    # while not wp_pub.done and not rospy.is_shutdown():
-    #     r = rospy.Rate(10)
-    #     r.sleep()
-    # # End test point code
-
     # Subscribe to elevator detection.
     rospy.Subscriber('/elevator/detection', Int32, elevator_cb)
     stop_wait = time.time() + wait_open
     path = []
     while not rospy.is_shutdown():
-        r = rospy.Rate(3) # 1hz
+        r = rospy.Rate(3) # 3hz
         r.sleep()
         # If lidar detects right door, go in. Else after some time, go left.
         if elevator == "right":

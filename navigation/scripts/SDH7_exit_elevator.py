@@ -2,7 +2,7 @@
 
 import rospy
 from geometry_msgs.msg import Twist
-from std_msgs.msg import Bool
+from std_msgs.msg import Bool, Int8
 from set_goal import Navigation
 
 from time import sleep
@@ -30,30 +30,42 @@ class WaypointPublisher():
 if __name__ == '__main__':
     rospy.init_node('waypoint_publisher')
     done_pub = rospy.Publisher('/elevator/done', Bool, queue_size=1)
+    floor_pub = rospy.Publisher('/floor_to_detect', Int8, queue_size=1)
+    door_opened = False
 
-    # Teleportation if using sim
-    # if rospy.get_param('use_sim_time') == True:
+    def floor_detect_cb(msg):
+        global door_opened
+        if msg.data == 1:
+            door_opened = True
+            floor_pub.publish(0)
+
     move = Navigation()
-    
-        # r = rospy.Rate(1)
-        # r.sleep()
-    path = []
     side = rospy.get_param('/elevator')
     if(side == "left"):
-        move = Navigation()
+        floor_pub.publish(3)
         move.set_init_pose(pos=[53.2,6.8,0],ori=[0,0,0.999993843881,0.00350887452617],cov=[0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853892326654787])
         sleep(1)
         outside = Twist()
         outside.linear.x, outside.linear.y, outside.angular.z = 51.5, 6.8, 3.14159
     if(side == "right"):
-        move = Navigation()
+        floor_pub.publish(4)
         move.set_init_pose(pos=[53.2,3.9,0],ori=[0,0,0.999993843881,0.00350887452617],cov=[0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853892326654787])
         sleep(1)
         outside = Twist()
         outside.linear.x, outside.linear.y, outside.angular.z = 51.5, 3.85, 3.14159
     
-    #TODO: wait for callback of elevator open door
-    raw_input("tell me when to exit")
+    # Wait for callback of elevator open door
+    # raw_input("tell me when to exit")
+    rospy.Subscriber("/floor_value", Int8, floor_detect_cb)
+    while not rospy.is_shutdown():
+        r = rospy.Rate(10)
+        try:
+            r.sleep()
+        except:
+            pass
+        if door_opened:
+            break
+
     wp_pub = WaypointPublisher([outside])
     while not wp_pub.done and not rospy.is_shutdown():
         r = rospy.Rate(10)

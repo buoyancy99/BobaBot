@@ -7,4 +7,6 @@
 	<node pkg="navigation" type="SDH2_exit_elevator.py" name="SDH2_elevator" respawn="false" output="screen"/> 
 
 	<!-- Run floor detection -->
+	<node pkg="elevator_utils" type="floor_detection.py" name="floor_detector" respawn="false" output="screen"/>
+
 </launch>

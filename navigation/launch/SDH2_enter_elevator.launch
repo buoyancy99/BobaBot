@@ -8,4 +8,7 @@
 	
 	<!-- Lidar elevator detection -->
 	<node pkg="elevator_utils" type="lidar_elevator_detection.py" name="elevator_detection" respawn="false" output="screen"/>
+
+	<!-- Ding detection -->
+	<node pkg="voice_utils" type="ding_detection.py" name="ding_detection" args="2" respawn="false" output="screen"/>
 </launch>
