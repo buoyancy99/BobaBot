@@ -62,12 +62,12 @@ def detection(ding_left, ding_right, is_7=True):
 
 if __name__ == "__main__":
 	if sys.argv[1] == '7':
-		ding_left = np.load('ding_select_floor7_left_mic.npy')
-		ding_right = np.load('ding_select_floor7_right_mic.npy')
+		ding_left = np.load('/home/rmcal/Projects/BobaBot/src/voice_utils/ding_select_floor7_left_mic.npy')
+		ding_right = np.load('/home/rmcal/Projects/BobaBot/src/voice_utils/ding_select_floor7_right_mic.npy')
 		is_7 = True
 	else:
-		ding_left = np.load('ding_select_floor2_left_mic.npy')
-		ding_right = np.load('ding_select_floor2_right_mic.npy')
+		ding_left = np.load('/home/rmcal/Projects/BobaBot/src/voice_utils/ding_select_floor2_left_mic.npy')
+		ding_right = np.load('/home/rmcal/Projects/BobaBot/src/voice_utils/ding_select_floor2_right_mic.npy')
 		is_7 = False
 	detection(ding_left, ding_right, is_7)
 
