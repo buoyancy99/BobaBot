@@ -5,7 +5,6 @@ import numpy as np
 
 from geometry_msgs.msg import Twist
 from geometry_msgs.msg import PoseWithCovarianceStamped
-from roborts_msgs.msg import TwistAccel
 from std_msgs.msg import Bool
 from sensor_msgs.msg import LaserScan
 
@@ -16,7 +15,7 @@ class Position_Controller:
 		print('Initializing position controller')
 
 		# Collision avoidance variables
-		self.shape = np.array([.45, .45]) # half of the x, y dimensions
+		self.shape = np.array([.45, .35]) # half of the x, y dimensions
 		self.refresh_rate = .2 # pessimistic assumption: 5hz updates for avoidance
 		
 		# First set the inital variables
@@ -24,12 +23,12 @@ class Position_Controller:
 		self.received_odom = False
 		self.state = Twist()
 		self.prev_state = None
-		self.prev_cmd = TwistAccel()
+		self.prev_cmd = Twist()
 		self.goal_position = Twist()
 		self.last_scan = None
 
 		# Set the publishers and subscribers
-		self.publish_command = rospy.Publisher('/cmd_vel_acc',TwistAccel,queue_size=1)
+		self.publish_command = rospy.Publisher('/cmd_vel',Twist,queue_size=1)
 		self.publish_goal_reached = rospy.Publisher('/goal_position_cb', Bool, queue_size=1)
 		rospy.Subscriber('/amcl_pose', PoseWithCovarianceStamped, self.update_state)
 		rospy.Subscriber('/goal_position', Twist, self.update_goal_postion)
@@ -38,10 +37,10 @@ class Position_Controller:
 		rospy.Timer(rospy.Duration(1/30.0), self.controller_cb)
 		
 		# Stop command
-		self.stop_cmd = TwistAccel()
-		self.stop_cmd.twist.linear.x = 0
-		self.stop_cmd.twist.linear.y = 0
-		self.stop_cmd.twist.angular.z = 0
+		self.stop_cmd = Twist()
+		self.stop_cmd.linear.x = 0
+		self.stop_cmd.linear.y = 0
+		self.stop_cmd.angular.z = 0
 		
 		# PD parameters
 		self.Kp_x = 1.
@@ -75,7 +74,7 @@ class Position_Controller:
 	def quat_to_eul(self, orientation):
 		return euler_from_quaternion((orientation.x, orientation.y, orientation.z, orientation.w))[2]
 
-	# Update state based on odom and store it in a Twist.
+	# Update state based on odom and store it in a 
 	def update_state(self, state_odom):
 		# Make sure there is an inital state first. 
 		self.state.linear.x = state_odom.pose.pose.position.x
@@ -111,18 +110,18 @@ class Position_Controller:
 		cmd_yaw = self.run_yaw_controller(self.goal_position.angular.z)
 
 		# Limit acceleration of inputs		
-		cmd_x = self.limit_accel(cmd_x, self.prev_cmd.twist.linear.x, self.max_lin_accel)
-		cmd_y = self.limit_accel(cmd_y, self.prev_cmd.twist.linear.y, self.max_lin_accel)
-		cmd_yaw = self.limit_accel(cmd_yaw, self.prev_cmd.twist.angular.z, self.max_ang_accel)
+		cmd_x = self.limit_accel(cmd_x, self.prev_cmd.linear.x, self.max_lin_accel)
+		cmd_y = self.limit_accel(cmd_y, self.prev_cmd.linear.y, self.max_lin_accel)
+		cmd_yaw = self.limit_accel(cmd_yaw, self.prev_cmd.angular.z, self.max_ang_accel)
 
-		# Put outputs into a TwistAccel
-		cmd_out = TwistAccel()
-		cmd_out.twist.linear.x = cmd_x
-		cmd_out.twist.linear.y = cmd_y
-		cmd_out.twist.angular.z = cmd_yaw
+		# Put outputs into a Twist
+		cmd_out = Twist()
+		cmd_out.linear.x = cmd_x
+		cmd_out.linear.y = cmd_y
+		cmd_out.angular.z = cmd_yaw
 
 		# Publish output if no collisions found. Else stop.
-		if self.last_scan and not self.check_collision(cmd_out.twist):
+		if self.last_scan and not self.check_collision(cmd_out):
 		# if True:
 			self.publish_command.publish(cmd_out)
 		else:
