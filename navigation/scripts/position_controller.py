@@ -121,7 +121,10 @@ class Position_Controller:
 		cmd_out.angular.z = cmd_yaw
 
 		# Publish output if no collisions found. Else stop.
-		if self.last_scan and not self.check_collision(cmd_out):
+		if self.check_collision(cmd_out):
+			cmd_out.linear.x = 0
+			cmd_out.linear.y = 0
+		if self.last_scan:
 		# if True:
 			self.publish_command.publish(cmd_out)
 		else:

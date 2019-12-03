@@ -92,9 +92,9 @@ if __name__ == '__main__':
         if elevator == "right":
             rospy.set_param('/elevator', 'right')
             inside1 = Twist()
-            inside1.linear.x, inside1.linear.y = 53.2, 3.9
+            inside1.linear.x, inside1.linear.y = 53.4, 3.9
             inside2 = Twist()
-            inside2.linear.x, inside2.linear.y, inside2.angular.z = 53.2, 3.9, 3.14
+            inside2.linear.x, inside2.linear.y, inside2.angular.z = 53.4, 3.9, 3.14
             path = [inside1, inside2]
             break
         elif time.time() >= stop_wait:
@@ -103,9 +103,9 @@ if __name__ == '__main__':
             outside = Twist()
             outside.linear.x, outside.linear.y = 51.5, 6.8
             inside1 = Twist()
-            inside1.linear.x, inside1.linear.y = 53.2, 6.8
+            inside1.linear.x, inside1.linear.y = 53.4, 6.8
             inside2 = Twist()
-            inside2.linear.x, inside2.linear.y, inside2.angular.z = 53.2, 7.0, 3.14
+            inside2.linear.x, inside2.linear.y, inside2.angular.z = 53.4, 7.0, 3.14
             path = [outside, inside1, inside2]
             break
     wp_pub = WaypointPublisher(path)
