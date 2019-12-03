@@ -122,8 +122,8 @@ class Position_Controller:
 		cmd_out.twist.angular.z = cmd_yaw
 
 		# Publish output if no collisions found. Else stop.
-		if self.last_scan and not self.check_collision(cmd_out.twist):
-		# if True:
+		# if self.last_scan and not self.check_collision(cmd_out.twist):
+		if True:
 			self.publish_command.publish(cmd_out)
 		else:
 			self.publish_command.publish(self.stop_cmd)
@@ -214,7 +214,7 @@ class Position_Controller:
 		# Keep output between -PI and PI
 		erroryaw %= 2*np.pi
 		if erroryaw > np.pi:
-			erroryaw -= 2*3.np.pi
+			erroryaw -= 2*np.pi
 
 		cmd_yaw = self.Kp_yaw*erroryaw + -self.Kd_yaw*dyaw
 		if(cmd_yaw > 0):

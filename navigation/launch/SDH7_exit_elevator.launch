@@ -1,0 +1,10 @@
+<launch>
+    <master auto="start" />
+	<!-- Run manual position controller -->
+	<node pkg="navigation" type="position_controller.py" name="position_controller" respawn="false" output="screen"/>
+
+	<!-- Run SDH2 elevator control logic -->
+	<node pkg="navigation" type="SDH7_exit_elevator.py" name="SDH7_elevator" respawn="false" output="screen"/> 
+
+	<!-- Run floor detection -->
+</launch>

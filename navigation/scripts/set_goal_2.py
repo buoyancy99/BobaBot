@@ -91,8 +91,16 @@ if __name__ == '__main__':
         rospy.init_node('set_goal')
         done_pub = rospy.Publisher('/elevator/done', Bool, queue_size=1)
         move = Navigation()
-        move.set_init_pose(pos=[-24.079832077,0.285948038101,0],ori=[0,0,-0.997079954328,0.0763646821356],cov=[0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853892326654787])
-        result = move.movebase_client(pos=[-51.6505699158,4.03140974045,0],ori=[0,0,-0.720128087068,0.693841147682])
+        move.set_init_pose(pos=[-24.5,-3.5,0],ori=[0,0,0.999993843881,0.00350887452617],cov=[0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853892326654787])
+        
+        # Go to cafe
+        result = move.movebase_client(pos=[-49.2158203125,-7.58403015137,0],ori=[0,0,0.708139986808,0.706072063661])
+        
+        ### DO STUFF ###
+
+        # Go back to elevator
+        result = move.movebase_client(pos=[-25.4651012421,-3.54517769814,0],ori=[0,0,0.0123519308175,0.999923711993])
+        
         done_pub.publish(Bool(data=True))
     except rospy.ROSInterruptExsception:
         rospy.loginfo("Navigation test finished.")

@@ -1,0 +1,30 @@
+<launch>
+	<arg name="map" default="SDH_all_floorplan_copy" />
+	<master auto="start" />
+	<param name="/use_sim_time" value="true" />
+	<param name="/elevator" value="right" />
+	<!-- Run the stage simulator -->
+	<node pkg="stage_ros" type="stageros" name="stageros" args="$(find navigation)/worlds/$(arg map).1.world" respawn="false">
+		<remap from="base_scan" to="scan" />
+		<param name="base_watchdog_timeout" value="0.01" />
+	</node>
+	<!-- Run the map server -->
+	<node name="map_server" pkg="map_server" type="map_server" args="$(find navigation)/maps/$(arg map).yaml" respawn="false" />
+	<!-- - Run AMCL -->
+	<include file="$(find amcl)/examples/amcl_omni.launch" />
+	<!-- Run the velocity converter node -->
+	<node pkg="roborts_planning" type="vel_converter" name="vel_converter_node" respawn="false" />
+	<!-- Run Movebase -->
+	<node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+		<rosparam file="$(find navigation)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
+		<rosparam file="$(find navigation)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
+		<rosparam file="$(find navigation)/config/local_costmap_params.yaml" command="load" />
+		<rosparam file="$(find navigation)/config/global_costmap_params.yaml" command="load" />
+		<rosparam file="$(find navigation)/config/base_local_planner_params.yaml" command="load" />
+	</node>
+	<include file="$(find navigation)/launch/SDH7_exit_elevator.launch"/>
+
+	<!-- Run the rviz -->
+	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find navigation)/rviz/debug.rviz" />
+
+</launch>

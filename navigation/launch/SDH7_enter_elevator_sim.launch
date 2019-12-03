@@ -1,5 +1,5 @@
 <launch>
-	<arg name="map" default="SDH_Combined_floorplan_copy" />
+	<arg name="map" default="SDH_all_floorplan_copy" />
 	<master auto="start" />
 	<param name="/use_sim_time" value="true" />
 	<!-- Run the stage simulator -->

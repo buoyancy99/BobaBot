@@ -61,5 +61,7 @@ if __name__ == '__main__':
 				break
 	print('Congrats on making it to the SDH 7 elevator!')
 
-	
+	### EXIT ELEVATOR STUFF ###
+
+
 	rospy.spin()
