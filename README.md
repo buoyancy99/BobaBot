@@ -150,6 +150,38 @@ rospy.Subscriber("floor_value", Int8, floor_detection_callback)
 
 ##Speech
 
+### Elevator door ding detection
+
+Requirements: pyaudio
+
+This uses the frequency of the ding to detect which door opens. Right now it works well on Floor 7, not so well on Floor 2, yet.
+
+
+
+To run:
+
+```bash
+rosrun voice_utils ding_detection 7 #7 or 2 for the floor number
+```
+
+
+
+To get the value. 
+
+```python
+def ding_detection_callback(ding_value):
+  #0: no door opens
+  #1: left door
+  #2: right door
+	return
+  
+rospy.Subscriber("ding_value", Int8, ding_detection_callback)
+```
+
+
+
+
+
 Packages Needed: In requirements.txt inside voice_utils
 
 ###Elevator Speech
