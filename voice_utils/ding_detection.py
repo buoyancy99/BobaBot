@@ -6,36 +6,23 @@ from scipy.signal import fftconvolve
 import numpy as np
 import pyaudio
 import rospy
+import sys
 
-
-# fs, data = wavfile.read('Ding.wav') # load OG file
-# a = data.T[0] 
-
-# fs2, data2 = wavfile.read('Long.wav') # load the data
-# a2 = data2.T[0]
-
-# d = fftconvolve(a, a2)
-# print(d.shape)
-# for i in range(len(d)):
-# 	if d[i] > 0.85: #Tune this for the DING
-# 		print('Do something')
-# 		break
-# plt.plot(d)
-# plt.show()
-
-#import keyboard
-
-def detection():
+def detection(ding_left, ding_right, is_7=True):
 	pub = rospy.Publisher('ding_detect', Int8, queue_size=10)
 	rospy.init_node('ding_detector')
 	rate = rospy.Rate(10)
-	while not rospy.is_shutdown():
-		CHUNK = 4096 # number of data points to read at a time
-		RATE = 44100 # time resolution of the recording device (Hz)
 
-		p=pyaudio.PyAudio() # start the PyAudio class
-		stream=p.open(format=pyaudio.paInt16,channels=1,rate=RATE,input=True,
+	CHUNK = 4096 # number of data points to read at a time
+	RATE = 44100 # time resolution of the recording device (Hz)
+
+	p=pyaudio.PyAudio() # start the PyAudio class
+
+	stream=p.open(format=pyaudio.paInt16,channels=1,rate=RATE,input=True,
 		              frames_per_buffer=CHUNK) #uses default input device
+
+	while not rospy.is_shutdown():
+		
 
 		data_buffer = np.array([])
 		# create a numpy array holding a single read of audio data
@@ -43,22 +30,46 @@ def detection():
 		    data = np.frombuffer(stream.read(CHUNK),dtype=np.int16)
 		    data_buffer = np.concatenate([data_buffer, data])
 
-		d = fftconvolve(ding, data_buffer)
-		dmax = d.max()
+		d_left = fftconvolve(ding_left, data_buffer)
+		d_right = fftconvolve(ding_right, data_buffer)
+		dlmax = d_left.max()
+		drmax = d_right.max()
+		#print("left ding is:" +str(dlmax))
+		#print("right ding is:" +str(drmax))
+		#FLOOR 7
 
-		print(dmax)
-		if dmax > 700000000:
-			print('DING')
+		if is_7:
+			l_threshold = 20173224741.999992
+			r_threshold = 30888468567.000004
+		else:
+			l_threshold = 10008361056.999992
+			r_threshold = 2000511377.789566
+
+
+		if dlmax > l_threshold:
+			print('Left DING')
 			pub.publish(1)
+		elif drmax > r_threshold:
+			print('Right DING')
+			pub.publish(2)
 		else:
 			pub.publish(0)
-		stream.stop_stream()
-		stream.close()
-		p.terminate()
+
+
+	stream.stop_stream()
+	stream.close()
+	p.terminate()
 
 if __name__ == "__main__":
-	ding = np.load('ding_select_floor7_left.npy')
-	detection()
+	if sys.argv[1] == '7':
+		ding_left = np.load('ding_select_floor7_left_mic.npy')
+		ding_right = np.load('ding_select_floor7_right_mic.npy')
+		is_7 = True
+	else:
+		ding_left = np.load('ding_select_floor2_left_mic.npy')
+		ding_right = np.load('ding_select_floor2_right_mic.npy')
+		is_7 = False
+	detection(ding_left, ding_right, is_7)
 
 # data_buffer = np.load('ding2.npy')[73000: 130000]
 
