@@ -184,13 +184,13 @@ rospy.Subscriber("ding_value", Int8, ding_detection_callback)
 
 Packages Needed: In requirements.txt inside voice_utils
 
-###Elevator Speech
+### Elevator Speech
 Use to call human to press button:
 Use rosrun voice_info Trial.py
 If human found inside elevator:
 Use rosrun voice_info Trial2.py
 
-###Speech Recognition Part
+### Speech Recognition Part
 
 Voice recognition stuff is in recognizer.py which is written as a ROS service such that it can read input from mic and publish back to the node.
 
