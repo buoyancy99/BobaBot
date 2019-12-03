@@ -34,7 +34,7 @@ if __name__ == '__main__':
     elevator = None
     wait_open = 3.5
     def elevator_cb(msg):
-        if msg.data == 7:
+        if msg.data == 2:
             global elevator
             elevator = "right"
     done_pub = rospy.Publisher('/elevator/done', Bool, queue_size=1)
@@ -42,14 +42,14 @@ if __name__ == '__main__':
     # Teleportation if using sim
     if rospy.get_param('use_sim_time') == True:
         move = Navigation()
-        move.set_init_pose(pos=[50.009576416,4.13174282913,0],ori=[0,0,0.0123519308175,0.999923711993],cov=[0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853892326654787])
+        move.set_init_pose(pos=[-25.4651012421,-3.54517769814,0],ori=[0,0,0.0123519308175,0.999923711993],cov=[0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853892326654787])
         r = rospy.Rate(1)
         r.sleep()
 
     # Wait for "ding"/user input before approaching elevator
     raw_input("Tell me when to approach elevator")
     outside_right = Twist()
-    outside_right.linear.x, outside_right.linear.y, outside_right.angular.z = 51.4, 3.85, 0
+    outside_right.linear.x, outside_right.linear.y, outside_right.angular.z = -24.5, -3.5, 0
     wp_pub = WaypointPublisher([outside_right])
     while not wp_pub.done and not rospy.is_shutdown():
         r = rospy.Rate(10)
@@ -76,20 +76,20 @@ if __name__ == '__main__':
         if elevator == "right":
             rospy.set_param('/elevator', 'right')
             inside1 = Twist()
-            inside1.linear.x, inside1.linear.y = 53.2, 3.9
+            inside1.linear.x, inside1.linear.y = -22.57, -3.5
             inside2 = Twist()
-            inside2.linear.x, inside2.linear.y, inside2.angular.z = 53.2, 3.9, 3.14
+            inside2.linear.x, inside2.linear.y, inside2.angular.z = -22.57, -3.5, 3.14
             path = [inside1, inside2]
             break
         elif time.time() >= stop_wait:
             # left if right didn't open
             rospy.set_param('/elevator', 'left')
             outside = Twist()
-            outside.linear.x, outside.linear.y = 51.5, 6.8
+            outside.linear.x, outside.linear.y = -24.5, -.4
             inside1 = Twist()
-            inside1.linear.x, inside1.linear.y = 53.2, 6.8
+            inside1.linear.x, inside1.linear.y = -22.5, -.4
             inside2 = Twist()
-            inside2.linear.x, inside2.linear.y, inside2.angular.z = 53.2, 7.0, 3.14
+            inside2.linear.x, inside2.linear.y, inside2.angular.z = -22.5, -.4, 3.14
             path = [outside, inside1, inside2]
             break
     wp_pub = WaypointPublisher(path)
