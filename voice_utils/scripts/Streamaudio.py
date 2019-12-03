@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 import pyaudio
 import numpy as np
 
