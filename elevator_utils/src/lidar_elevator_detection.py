@@ -35,8 +35,8 @@ class LidarElevatorDetector:
 
 	def laser_cb(self, scan):
 		# Make (N, ) array of angles
-		# angles = self.state.angular.z + np.pi + np.arange(scan.angle_min, scan.angle_max, scan.angle_increment)
-		angles = self.state.angular.z + np.arange(scan.angle_min, scan.angle_max, scan.angle_increment)
+		angles = self.state.angular.z + np.pi + np.arange(scan.angle_min, scan.angle_max, scan.angle_increment)
+		# angles = self.state.angular.z + np.arange(scan.angle_min, scan.angle_max, scan.angle_increment)
 		
 		# Make (N, 1) array of ranges
 		ranges = np.array(scan.ranges)[:len(angles), None]
