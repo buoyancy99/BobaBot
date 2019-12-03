@@ -32,14 +32,14 @@ if select == 0:
     stream.close()
     p.terminate()
 
-    np.save('ding3.npy', data_buffer)
+    np.save('ding5.npy', data_buffer)
     plt.plot(data_buffer)
     plt.show()
 
 else:
 
-    data_buffer = np.load('ding3.npy')[67000: 123001]
-    np.save('ding_select_floor7_left.npy', data_buffer)
+    data_buffer = np.load('ding7.npy')[69000: 110000]
+    np.save('ding_select_floor7_left_mic.npy', data_buffer)
     plt.plot(data_buffer)
     plt.show()
 
