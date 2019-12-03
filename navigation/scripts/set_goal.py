@@ -4,6 +4,7 @@ import actionlib
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
 from move_base_msgs.msg import MoveBaseActionResult
+from time import sleep
 
 
 class Navigation:
@@ -36,7 +37,8 @@ class Navigation:
     def set_init_pose(self,
                       pos=[49.4471969604, -0.919650554657, 0],
                       ori=[0, 0, -0.13963701777, 0.990202758665],
-                      cov=[0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853892326654787],
+                      cov=[0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                           0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853892326654787],
                       frame_id="map"):
         ps = PoseStamped()
         ps_cov = PoseWithCovarianceStamped()
@@ -55,8 +57,8 @@ class Navigation:
 
         self.ps_cov_pub.publish(ps_cov)
 
-    def movebase_client(self, pos=[71.796569824, -6.63157987595, 0], 
-                        ori=[0, 0, -0.0293482956565, 0.999569245997], 
+    def movebase_client(self, pos=[71.796569824, -6.63157987595, 0],
+                        ori=[0, 0, -0.0293482956565, 0.999569245997],
                         frame_id="map"):
 
         goal = MoveBaseGoal()
@@ -70,8 +72,11 @@ class Navigation:
         goal.target_pose.pose.orientation.y = ori[1]
         goal.target_pose.pose.orientation.z = ori[2]
         goal.target_pose.pose.orientation.w = ori[3]
+        return self.navigate_to_goal(goal, 0)
 
-        # Sends the goal to the action server.
+    def navigate_to_goal(self, goal, depth):
+                # Sends the goal to the action server.
+        depth += 1
         self.client.send_goal(goal)
         # Waits for the server to finish performing the action.
         wait = self.client.wait_for_result()
@@ -81,6 +86,9 @@ class Navigation:
             rospy.signal_shutdown("Action server not available!")
         else:
             # Result of executing the action
+            if not self.client.get_result() and depth < 10:
+                sleep(5)
+                return self.navigate_to_goal(goal,depth)
             return self.client.get_result()
 
 
@@ -88,14 +96,16 @@ if __name__ == '__main__':
     try:
         rospy.init_node('set_goal')
         move = Navigation()
-        move.set_init_pose(pos=[24.7214736938,6.34529781342,0],ori=[0,0,0.0795551282507,0.996830467817],cov=[0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853892326654787])
-        result = move.movebase_client(pos=[49.509576416,5.28544282913,0],ori=[0,0,0.0123519308175,0.999923711993])
+        move.set_init_pose(pos=[24.7214736938, 6.34529781342, 0], ori=[0, 0, 0.0795551282507, 0.996830467817], cov=[0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0,
+                                                                                                                    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853892326654787])
+        result = move.movebase_client(pos=[49.509576416, 5.28544282913, 0], ori=[
+                                      0, 0, 0.0123519308175, 0.999923711993])
        # move.set_init_pose([-16.692276001,1.4976606369,0],[0,0,-0.694762724396,0.719239012283],[0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853892326654787])
         # rospy.sleep(10)
         # result = move.movebase_client()
         # if move.reachGoal:
         #     move.set_init_pose(pos=[48.9008178711,5.29871320724,0],ori=[0,0,0.0369699930426,0.999316376136],cov=[0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853892326654787])
-        #     move.movebase_client(pos=[24.6487140656,6.36364078522,0],ori=[0,0,0.198137699578,0.980174194726]) 
+        #     move.movebase_client(pos=[24.6487140656,6.36364078522,0],ori=[0,0,0.198137699578,0.980174194726])
         # # r = rospy.Rate(3) # 10hz
         # while result != actionlib.SimpleGoalState.DONE:
         #     result = move.movebase_client()
