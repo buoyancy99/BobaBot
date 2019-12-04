@@ -122,8 +122,14 @@ class Position_Controller:
 
 		# Publish output if no collisions found. Else stop.
 		if not self.last_scan or self.check_collision(cmd_out):
-			cmd_out.linear.x = 0
-			cmd_out.linear.y = 0
+			# cmd_out.linear.x = 0
+			# cmd_out.linear.y = 0
+			if(abs(cmd_out.linear.x) > .1):
+				rel = .1/abs(cmd_out.linear.x)
+				cmd_out.linear.x *= rel
+			if(abs(cmd_out.linear.y) > .1):
+				rel = .1/abs(cmd_out.linear.y)
+				cmd_out.linear.y *= rel
 		if self.last_scan:
 		# if True:
 			self.publish_command.publish(cmd_out)

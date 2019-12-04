@@ -53,16 +53,16 @@ if __name__ == '__main__':
         r.sleep()
 
     # Wait for "ding"/user input before approaching elevator
-    raw_input("Tell me when to approach elevator")
-    # rospy.Subscriber("ding_value", Int8, ding_detect_cb)
-    # while not rospy.is_shutdown():
-    #     r = rospy.Rate(10)
-    #     try:
-    #         r.sleep()
-    #     except:
-    #         pass
-    #     if dinged:
-    #         break
+    # raw_input("Tell me when to approach elevator")
+    rospy.Subscriber("ding_value", Int8, ding_detect_cb)
+    while not rospy.is_shutdown():
+        r = rospy.Rate(10)
+        try:
+            r.sleep()
+        except:
+            pass
+        if dinged:
+            break
 
     outside_right = Twist()
     outside_right.linear.x, outside_right.linear.y, outside_right.angular.z = -24.5, -3.5, 0
