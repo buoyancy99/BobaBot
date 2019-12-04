@@ -72,7 +72,21 @@ class Navigation:
         goal.target_pose.pose.orientation.y = ori[1]
         goal.target_pose.pose.orientation.z = ori[2]
         goal.target_pose.pose.orientation.w = ori[3]
-        return self.navigate_to_goal(goal, 0)
+        
+        self.client.send_goal(goal)
+        # Waits for the server to finish performing the action.
+        wait = self.client.wait_for_result()
+        # If the result doesn't arrive, assume the Server is not available
+        if not wait:
+            rospy.logerr("Action server not available!")
+            rospy.signal_shutdown("Action server not available!")
+        else:
+            # Result of executing the action
+            #if not self.client.get_result() and depth < 10:
+             #   sleep(5)
+              #  return self.navigate_to_goal(goal,depth)
+            return self.client.get_result()
+        #return self.navigate_to_goal(goal, 0)
 
     def navigate_to_goal(self, goal, depth):
                 # Sends the goal to the action server.
@@ -86,9 +100,9 @@ class Navigation:
             rospy.signal_shutdown("Action server not available!")
         else:
             # Result of executing the action
-            if not self.client.get_result() and depth < 10:
-                sleep(5)
-                return self.navigate_to_goal(goal,depth)
+            #if not self.client.get_result() and depth < 10:
+             #   sleep(5)
+              #  return self.navigate_to_goal(goal,depth)
             return self.client.get_result()
 
 
