@@ -59,16 +59,16 @@ if __name__ == '__main__':
         outside.linear.x, outside.linear.y, outside.angular.z = 51.5, 3.85, 3.14159
     
     # Wait for callback of elevator open door
-    raw_input("tell me when to exit")
-    # rospy.Subscriber("/floor_value", Int8, floor_detect_cb)
-    # while not rospy.is_shutdown():
-    #     r = rospy.Rate(10)
-    #     try:
-    #         r.sleep()
-    #     except:
-    #         pass
-    #     if door_opened:
-    #         break
+    # raw_input("tell me when to exit")
+    rospy.Subscriber("/floor_value", Int8, floor_detect_cb)
+    while not rospy.is_shutdown():
+        r = rospy.Rate(10)
+        try:
+            r.sleep()
+        except:
+            pass
+        if door_opened:
+            break
 
     wp_pub = WaypointPublisher([outside])
     while not wp_pub.done and not rospy.is_shutdown():

@@ -100,7 +100,7 @@ if __name__ == "__main__":
     floor7_left = cv2.imread('/home/rmcal/Projects/BobaBot/src/elevator_utils/src/floor7_left_fix.png')
     floor7_right = cv2.imread('/home/rmcal/Projects/BobaBot/src/elevator_utils/src/floor7_right.png')
 
-    sift = cv2.xfeatures2d.SURF_create()
+    sift = cv2.features2d.SURF_create()
     floor2_left_sift.detectAndCompute(floor2_left, None)
     floor2_right_sift.detectAndCompute(floor2_right, None)
     floor7_left_sift.detectAndCompute(floor7_left, None)

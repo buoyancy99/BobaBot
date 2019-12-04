@@ -2,7 +2,7 @@
 
 import rospy
 from geometry_msgs.msg import Twist
-from std_msgs.msg import Bool, Int32
+from std_msgs.msg import Bool, Int32, Int8
 from set_goal import Navigation
 
 import time
