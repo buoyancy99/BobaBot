@@ -40,17 +40,21 @@ if __name__ == '__main__':
             floor_pub.publish(0)
 
     move = Navigation()
+    pos = rospy.wait_for_message('/amcl_pose', PoseWithCovarianceStamped).pose.pose
+    x, y = pos.position.x, pos.position.y
+    qx, qy, qz, qw = pos.orientation.x, pos.orientation.y, pos.orientation.z, pos.orientation.w
+
+    move.set_init_pose(pos=[x + 75.95,y + 7.55,0],ori=[qx,qy,qz,qw],cov=[0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853892326654787])
+
+    sleep(1)
+
     side = rospy.get_param('/elevator')
     if(side == "left"):
         floor_pub.publish(3)
-        move.set_init_pose(pos=[53.2,6.8,0],ori=[0,0,0.999993843881,0.00350887452617],cov=[0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853892326654787])
-        sleep(1)
         outside = Twist()
         outside.linear.x, outside.linear.y, outside.angular.z = 51.5, 6.8, 3.14159
     if(side == "right"):
         floor_pub.publish(4)
-        move.set_init_pose(pos=[53.2,3.9,0],ori=[0,0,0.999993843881,0.00350887452617],cov=[0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853892326654787])
-        sleep(1)
         outside = Twist()
         outside.linear.x, outside.linear.y, outside.angular.z = 51.5, 3.85, 3.14159
     
