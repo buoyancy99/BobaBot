@@ -101,10 +101,10 @@ if __name__ == "__main__":
     floor7_right = cv2.imread('/home/rmcal/Projects/BobaBot/src/elevator_utils/src/floor7_right.png')
 
     sift = cv2.features2d.SURF_create()
-    floor2_left_sift.detectAndCompute(floor2_left, None)
-    floor2_right_sift.detectAndCompute(floor2_right, None)
-    floor7_left_sift.detectAndCompute(floor7_left, None)
-    floor7_right_sift.detectAndCompute(floor7_right, None)
+    floor2_left_sift = sift.detectAndCompute(floor2_left, None)
+    floor2_right_sift = sift.detectAndCompute(floor2_right, None)
+    floor7_left_sift = sift.detectAndCompute(floor7_left, None)
+    floor7_right_sift = sift.detectAndCompute(floor7_right, None)
 
     floor_sift_list = [floor2_left_sift, floor2_right_sift, floor7_left_sift, floor7_right_sift]
 
