@@ -95,10 +95,10 @@ def run_detection(args):
         rate.sleep()
 
 if __name__ == "__main__":
-    floor2_left = cv2.imread('/home/boyuan/Projects/BobaBot/src/elevator_utils/src/floor2_left.png')
-    floor2_right = cv2.imread('/home/boyuan/Projects/BobaBot/src/elevator_utils/src/floor2_right.png')
-    floor7_left = cv2.imread('/home/boyuan/Projects/BobaBot/src/elevator_utils/src/floor7_left_fix.png')
-    floor7_right = cv2.imread('/home/boyuan/Projects/BobaBot/src/elevator_utils/src/floor7_right.png')
+    floor2_left = cv2.imread('/home/rmcal/Projects/BobaBot/src/elevator_utils/src/floor2_left.png')
+    floor2_right = cv2.imread('/home/rmcal/Projects/BobaBot/src/elevator_utils/src/floor2_right.png')
+    floor7_left = cv2.imread('/home/rmcal/Projects/BobaBot/src/elevator_utils/src/floor7_left_fix.png')
+    floor7_right = cv2.imread('/home/rmcal/Projects/BobaBot/src/elevator_utils/src/floor7_right.png')
 
     sift = cv2.xfeatures2d.SURF_create()
     floor2_left_sift.detectAndCompute(floor2_left, None)
