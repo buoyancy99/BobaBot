@@ -22,15 +22,18 @@ def detection(ding_left, ding_right, is_7=True):
 
 	stream=p.open(format=pyaudio.paInt16,channels=1,rate=RATE,input=True,
 		              frames_per_buffer=CHUNK) #uses default input device
-
+	sos = signal.butter(500, 1250, 'hp', fs=RATE, output='sos')
+	ding_left = signal.sosfilt(sos, ding_left)
+	ding_reight = signal.sosfilt(sos, ding_right)
 	while not rospy.is_shutdown():
 		
-
 		data_buffer = np.array([])
 		# create a numpy array holding a single read of audio data
 		for i in range(10): #to it a few times just to see
 		    data = np.frombuffer(stream.read(CHUNK),dtype=np.int16)
 		    data_buffer = np.concatenate([data_buffer, data])
+
+		data_buffer = signal.sosfilt(sos, data_buffer)
 
 		d_left = fftconvolve(ding_left, data_buffer)
 		d_right = fftconvolve(ding_right, data_buffer)
@@ -47,6 +50,7 @@ def detection(ding_left, ding_right, is_7=True):
 			l_threshold = 10008361056.999992
 			r_threshold = 2000511377.789566
 
+		
 
 		if dlmax > l_threshold:
 			print('Left DING')
