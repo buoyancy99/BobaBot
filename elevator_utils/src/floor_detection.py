@@ -13,13 +13,14 @@ to_detect = 0
 
 class FloorDetector:
     def __init__(self, args):
+        self.args = args
         self.pub = rospy.Publisher('floor_value', Int8, queue_size=10)
         self.rate = rospy.Rate(5)
         self.to_detect = 0
         self.bridge = CvBridge()
 
         rospy.Subscriber("floor_to_detect", Int8, self.to_detect_callback)
-        rospy.Timer(rospy.Duration(1/5.), self.color_image_callback, args)
+        rospy.Timer(rospy.Duration(1/4.), self.color_image_callback)
 
     def fm(self, floor_sift, img2, sift, MIN_MATCH_COUNT=15):
 
@@ -65,6 +66,7 @@ class FloorDetector:
         self.to_detect = msg.data
 
     def color_image_callback(self, args):
+        # print('callback')
         img_msg = rospy.wait_for_message("/mynteye/left/image_color", Image)
 
         # print('callback')
@@ -78,13 +80,12 @@ class FloorDetector:
         
         if self.to_detect == 0:
             return
-
-        floor_sift_list = args[0]
+        # print('callback')
+        floor_sift_list = self.args[0]
         floor_sift = floor_sift_list[to_detect-1]
-        sift = args[1]
+        sift = self.args[1]
         floor_value = self.fm(floor_sift, cv_image, sift)
         self.pub.publish(floor_value)
-        self.rate.sleep()
         # k = cv2.waitKey(3)
 
 if __name__ == "__main__":
