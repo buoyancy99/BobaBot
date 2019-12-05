@@ -2,6 +2,7 @@
 import matplotlib.pyplot as plt
 from scipy.fftpack import fft
 from scipy.io import wavfile # get the api
+from scipy import signal
 from scipy.signal import stft
 from scipy.signal import fftconvolve
 import numpy as np
@@ -22,9 +23,9 @@ def detection(ding_left, ding_right, is_7=True):
 
 	stream=p.open(format=pyaudio.paInt16,channels=1,rate=RATE,input=True,
 		              frames_per_buffer=CHUNK) #uses default input device
-	sos = signal.butter(500, 1250, 'hp', fs=RATE, output='sos')
+	sos = signal.butter(10, 500, 'hp', fs=RATE, output='sos')
 	ding_left = signal.sosfilt(sos, ding_left)
-	ding_reight = signal.sosfilt(sos, ding_right)
+	ding_right = signal.sosfilt(sos, ding_right)
 	while not rospy.is_shutdown():
 		
 		data_buffer = np.array([])
@@ -32,7 +33,6 @@ def detection(ding_left, ding_right, is_7=True):
 		for i in range(10): #to it a few times just to see
 		    data = np.frombuffer(stream.read(CHUNK),dtype=np.int16)
 		    data_buffer = np.concatenate([data_buffer, data])
-
 		data_buffer = signal.sosfilt(sos, data_buffer)
 
 		d_left = fftconvolve(ding_left, data_buffer)
@@ -44,14 +44,17 @@ def detection(ding_left, ding_right, is_7=True):
 		#FLOOR 7
 
 		if is_7:
-			l_threshold = 20173224741.999992
-			r_threshold = 30888468567.000004
+			l_threshold = 2009281003.7854402
+			r_threshold = 9000895568.615297
+			              
+			
 		else:
 			l_threshold = 10008361056.999992
 			r_threshold = 2000511377.789566
 
 		
-
+		print('left: ', dlmax)
+		print('right: ', drmax)
 		if dlmax > l_threshold:
 			print('Left DING')
 			pub.publish(1)
