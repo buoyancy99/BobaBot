@@ -1,6 +1,7 @@
 <launch>
     <master auto="start" />
-        <include file="$(find navigation)/launch/robot_activate.launch" />
+	<include file="$(find navigation)/launch/robot_activate.launch" />
+	<include file="$(find mynteye_wrapper_d)/launch/mynteye.launch" />
 	<arg name="map" default="SDH_all_floorplan" />
 	<param name="/use_sim_time" value="false" />
 	<!-- Run the map server -->
