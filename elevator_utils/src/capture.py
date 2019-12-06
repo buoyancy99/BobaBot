@@ -9,7 +9,7 @@ import numpy as np
 import copy
 
 
-#to_detect = 0
+to_detect = 0
 
 class FloorDetector:
     def __init__(self, args):
@@ -19,10 +19,10 @@ class FloorDetector:
         self.to_detect = 0
         self.bridge = CvBridge()
 
-        rospy.Subscriber("floor_to_detect", Int8, self.to_detect_callback)
+        # rospy.Subscriber("floor_to_detect", Int8, self.to_detect_callback)
         rospy.Timer(rospy.Duration(1/4.), self.color_image_callback)
 
-    def fm(self, floor_sift, img2, sift, MIN_MATCH_COUNT=30):
+    def fm(self, floor_sift, img2, sift, MIN_MATCH_COUNT=15):
 
         # find the keypoints and descriptors with SIFT
         kp1, des1 = floor_sift
@@ -55,9 +55,8 @@ class FloorDetector:
 
             # img2 = cv2.polylines(img2,[np.int32(dst)],True,255,3, cv2.LINE_AA)
 
-            print('Floor!, ', len(good))
+            print('Floor!')
             return 1
-
         else:
             print("Not enough matches are found - %d/%d" % (len(good),MIN_MATCH_COUNT))
             return 0
@@ -69,7 +68,7 @@ class FloorDetector:
     def color_image_callback(self, args):
         # print('callback')
         img_msg = rospy.wait_for_message("/mynteye/left/image_color", Image)
-        #self.to_detect = 3
+
         # print('callback')
         try:
             cv_image = self.bridge.imgmsg_to_cv2(img_msg, "passthrough")
@@ -79,23 +78,26 @@ class FloorDetector:
 
         #cv2.imshow("door_detector", cv_image)
         
-        if self.to_detect == 0:
-            return
+        # if self.to_detect == 0:
+        #     return
         # print('callback')
         floor_sift_list = self.args[0]
-        floor_sift = floor_sift_list[self.to_detect-1]
+        floor_sift = floor_sift_list[to_detect-1]
         sift = self.args[1]
         floor_value = self.fm(floor_sift, cv_image, sift)
         self.pub.publish(floor_value)
-        # k = cv2.waitKey(3)
+        cv2.imshow('dummy', cv_image)
+        k = cv2.waitKey(10)
+        if k == chr('c'):
+            cv2.imwrite('capture.png', cv_image)
 
 if __name__ == "__main__":
     rospy.init_node('floor_detector')
 
-    floor2_left = cv2.imread('/home/rmcal/Projects/BobaBot/src/elevator_utils/src/sdh2_right_highdef.png')
-    floor2_right = cv2.imread('/home/rmcal/Projects/BobaBot/src/elevator_utils/src/sdh2_right_highdef.png')
+    floor2_left = cv2.imread('/home/rmcal/Projects/BobaBot/src/elevator_utils/src/floor2_left.png')
+    floor2_right = cv2.imread('/home/rmcal/Projects/BobaBot/src/elevator_utils/src/floor2_right.png')
     floor7_left = cv2.imread('/home/rmcal/Projects/BobaBot/src/elevator_utils/src/floor7_left_fix.png')
-    floor7_right = cv2.imread('/home/rmcal/Projects/BobaBot/src/elevator_utils/src/sdh7_right_highdef.png')
+    floor7_right = cv2.imread('/home/rmcal/Projects/BobaBot/src/elevator_utils/src/floor7_right.png')
 
     sift = cv2.xfeatures2d.SURF_create()
     floor2_left_sift = sift.detectAndCompute(floor2_left, None)

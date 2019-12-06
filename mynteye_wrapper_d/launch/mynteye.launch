@@ -32,7 +32,7 @@
   <!-- Device index -->
   <arg name="dev_index" default="0" />
   <!-- Framerate -->
-  <arg name="framerate" default="60" />
+  <arg name="framerate" default="30" />
 
   <!--
   Device mode
@@ -46,7 +46,7 @@
   <arg name="color_mode" default="$(arg color_raw)" />
   <!-- Note: must set DEPTH_RAW to get raw depth values for points -->
   <arg name="depth_mode" default="$(arg depth_raw)" />
-  <arg name="stream_mode" default="$(arg stream_1280x480)" />
+  <arg name="stream_mode" default="$(arg stream_2560x720)" />
   <arg name="color_stream_format" default="$(arg stream_yuyv)" />
   <arg name="depth_stream_format" default="$(arg stream_yuyv)" />
   <arg name="depth_type" default="$(arg type_mono16)" />
@@ -56,7 +56,7 @@
   <!-- Auto-white balance -->
   <arg name="state_awb" default="true" />
   <!-- IR intensity -->
-  <arg name="ir_intensity" default="5" />
+  <arg name="ir_intensity" default="3" />
   <!-- IR Depth Only -->
   <arg name="ir_depth_only" default="true" />
 
