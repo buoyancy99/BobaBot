@@ -85,7 +85,8 @@ class FloorDetector:
         floor_sift_list = self.args[0]
         floor_sift = floor_sift_list[self.to_detect-1]
         sift = self.args[1]
-        floor_value = self.fm(floor_sift, cv_image, sift)
+        threshold_list = self.args[2]
+        floor_value = self.fm(floor_sift, cv_image, sift, MIN_MATCH_COUNT=threshold_list[self.to_detect-1])
         self.pub.publish(floor_value)
         # k = cv2.waitKey(3)
 
@@ -105,7 +106,9 @@ if __name__ == "__main__":
 
     floor_sift_list = [floor2_left_sift, floor2_right_sift, floor7_left_sift, floor7_right_sift]
 
-    FloorDetector((floor_sift_list, sift))
+    threshold_list = [90, 90, 15, 50]
+
+    FloorDetector((floor_sift_list, sift, threshold_list))
     rospy.spin()
 
 
