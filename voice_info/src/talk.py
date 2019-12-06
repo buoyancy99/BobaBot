@@ -1,12 +1,13 @@
+#!/usr/bin/env python
 import speech_recognition as sr
 import pygame as pg
 from playsound import playsound
+from voice_info.srv import talk, talkResponse
+#import rospy, os, sys
 
-import roslib; roslib.load_manifest('sound_yak')
-import rospy, os, sys
-from sound_play.msg import SoundRequest
-from sound_play.libsoundplay import SoundClient
-from sound_yak.msg import yak_cmd
+#import roslib; roslib.load_manifest('sound_yak')
+
+
 
 def recognize_speech_from_mic(recognizer, microphone):
     if not isinstance(recognizer, sr.Recognizer):
@@ -35,11 +36,11 @@ def recognize_speech_from_mic(recognizer, microphone):
     except sr.UnknownValueError:
         # speech was unintelligible
         response["error"] = "Unable to recognize speech"
-
     return response
 
 def call(response):
     response = response.lower()
+    #Fit this stuff, kinda hardcode it for the responses. 
     if 'hello' in response or 'hi' in response:
         #print('Identified Boba, play respective recording ')
        	playsound("audio_recordings/order_boba.mp3")
@@ -54,8 +55,7 @@ def call(response):
        	playsound("audio_recordings/thank_end.mp3")
     return 
 
-if __name__ == "__main__":
-
+def handle_talk(req):
     recognizer = sr.Recognizer()
     mic = sr.Microphone() #selects default, change to use 
     response = recognize_speech_from_mic(recognizer, mic)
@@ -66,39 +66,23 @@ if __name__ == "__main__":
                   '-'*17,
                   response['transcription']))
     call(response['transcription'])
+    return talkResponse(1)
 
-#!/usr/bin/env python
 
-
-# directory with sound assets - change as needed
-soundAssets = '/home/shiloh/devel/audio_assets/'
-# duration of yak throttle
-throttle = 3 # seconds
-
-def sound_translator(data):
-    print data
-    global allow_yak
-    if rospy.Time.now() <= allow_yak: # Throttles yak to avoid
-        print("Sound throttled")      # SoundClient segfault
-        return
-    # when to reallow yak
-    allow_yak = rospy.Time.now() + rospy.Duration.from_sec(throttle)
-    if data.cmd == "wav":
-        soundhandle.playWave(soundAssets + data.param)
-    if data.cmd == "say":
-        soundhandle.say(data.param)
-
-def yak_init():
-    rospy.init_node('yak_node', anonymous = True)
-    global allow_yak
-    allow_yak = rospy.Time.now()
-    rospy.Subscriber('yak', yak_cmd, sound_translator)
+def talk_server():
+    rospy.init_node('talk_server')
+    s = rospy.Service('talk', talk, handle_talk)
     rospy.spin()
 
-if __name__ == '__main__':
-    soundhandle = SoundClient()
-    rospy.sleep(1)
-    
-    yak_init()
+if __name__ == "__main__":
+    talk_server()
 
-
+### Client function
+def talk_client:
+    rospy.wait_for_service('talk')
+    try:
+        talk_func = rospy.ServiceProxy('talk', talk)
+        resp1 = talk_func(1)
+        return resp1.result
+    except rospy.ServiceException, e:
+        print "Service call failed: %s"%e
