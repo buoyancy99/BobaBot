@@ -73,7 +73,7 @@ if __name__ == '__main__':
 	# Go to cafe
 	# result = move.movebase_client(pos=[-49.2158203125,-7.58403015137,0],ori=[0,0,0.708139986808,0.706072063661])
 	result = move.movebase_client(pos=[-42.6,2.064,0],ori=[0,0,-0.6983,0.7158])
-	raw_input("Tell me when to return")
+	#raw_input("Tell me when to return")
 	
 	# Go back to elevator
 	result = move.movebase_client(pos=[-25.4651012421,-0.54517769814,0],ori=[0,0,0.0123519308175,0.999923711993])

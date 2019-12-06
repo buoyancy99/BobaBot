@@ -22,7 +22,7 @@ class FloorDetector:
         rospy.Subscriber("floor_to_detect", Int8, self.to_detect_callback)
         rospy.Timer(rospy.Duration(1/4.), self.color_image_callback)
 
-    def fm(self, floor_sift, img2, sift, MIN_MATCH_COUNT=30):
+    def fm(self, floor_sift, img2, sift, MIN_MATCH_COUNT=50):
 
         # find the keypoints and descriptors with SIFT
         kp1, des1 = floor_sift
