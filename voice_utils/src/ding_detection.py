@@ -4,7 +4,7 @@ from scipy.fftpack import fft
 from scipy.io import wavfile # get the api
 from scipy import signal
 from scipy.signal import stft
-from scipy.signal import fftconvolve
+from scipy.signal import fftconvolve, convolve
 import numpy as np
 import pyaudio
 import rospy
@@ -37,6 +37,8 @@ def detection(ding_left, ding_right, is_7=True):
 
 		d_left = fftconvolve(ding_left, data_buffer)
 		d_right = fftconvolve(ding_right, data_buffer)
+		# d_left = convolve(ding_left, data_buffer)
+		# d_right = convolve(ding_right, data_buffer)
 		dlmax = d_left.max()
 		drmax = d_right.max()
 		#print("left ding is:" +str(dlmax))
@@ -44,15 +46,12 @@ def detection(ding_left, ding_right, is_7=True):
 		#FLOOR 7
 
 		if is_7:
-			l_threshold = 2009281003.7854402
-			r_threshold = 9000895568.615297
-			              
+			l_threshold = 2509281003.7854402
+			r_threshold = 10000000000.0            
 			
 		else:
-			l_threshold = 10008361056.999992
-			r_threshold = 10000000000.789566
-						#   15995635304
-						#   10512817287
+			l_threshold = 10008361056.0
+			r_threshold = 8500000000.0
 
 		
 		print('left: ', dlmax)

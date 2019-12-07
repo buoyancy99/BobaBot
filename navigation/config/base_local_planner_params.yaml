@@ -18,7 +18,7 @@ TrajectoryPlannerROS:
 
   occdist_scale: 0.005
   
-  yaw_goal_tolerance: 0.16
+  yaw_goal_tolerance: 0.1
 
   
 
