@@ -106,8 +106,8 @@ if __name__ == "__main__":
 
     floor_sift_list = [floor2_left_sift, floor2_right_sift, floor7_left_sift, floor7_right_sift]
 
-    threshold_list = [90, 90, 15, 50]
-
+   # threshold_list = [90, 90, 15, 50]
+    threshold_list = [50, 90, 15, 30]
     FloorDetector((floor_sift_list, sift, threshold_list))
     rospy.spin()
 

@@ -51,7 +51,7 @@ if __name__ == '__main__':
 	move = Navigation()
 	raw_input("Tell me when to start")
 	# SDH7 start navigation, 6.3xxx if in Newton, 4.3xxx if outside
-	move.set_init_pose(pos=[25.4214736938,4.34529781342,0],ori=[0,0,0.0795551282507,0.996830467817],cov=[0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853892326654787])
+	move.set_init_pose(pos=[25.4214736938,6.34529781342,0],ori=[0,0,0.0795551282507,0.996830467817],cov=[0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853892326654787])
 	result = move.movebase_client(pos=[50.009576416,4.13174282913,0],ori=[0,0,0.0123519308175,0.999923711993])
 
 	# # Uncomment below for unit testing 7th floor elevator.
@@ -72,9 +72,9 @@ if __name__ == '__main__':
 
 	# Go to cafe
 	# in cafe
-	result = move.movebase_client(pos=[-49.2158203125,-7.58403015137,0],ori=[0,0,0.708139986808,0.706072063661])
+	#result = move.movebase_client(pos=[-49.2158203125,-7.58403015137,0],ori=[0,0,0.708139986808,0.706072063661])
 	# outside cafe
-	#result = move.movebase_client(pos=[-42.6,2.064,0],ori=[0,0,-0.6983,0.7158])
+	result = move.movebase_client(pos=[-42.6,2.064,0],ori=[0,0,-0.6983,0.7158])
 	#raw_input("Tell me when to return")
 	
 	# Go back to elevator

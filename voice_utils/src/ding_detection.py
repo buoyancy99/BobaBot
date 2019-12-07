@@ -50,11 +50,13 @@ def detection(ding_left, ding_right, is_7=True):
 			
 		else:
 			l_threshold = 10008361056.999992
-			r_threshold = 2000511377.789566
+			r_threshold = 10000000000.789566
+						#   15995635304
+						#   10512817287
 
 		
-		#print('left: ', dlmax)
-		#print('right: ', drmax)
+		print('left: ', dlmax)
+		print('right: ', drmax)
 		if dlmax > l_threshold:
 			print('Left DING')
 			pub.publish(1)
