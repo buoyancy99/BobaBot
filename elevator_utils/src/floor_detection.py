@@ -23,43 +23,48 @@ class FloorDetector:
         rospy.Timer(rospy.Duration(1/4.), self.color_image_callback)
 
     def fm(self, floor_sift, img2, sift, MIN_MATCH_COUNT=50):
+        try:
 
-        # find the keypoints and descriptors with SIFT
-        kp1, des1 = floor_sift
-        kp2, des2 = sift.detectAndCompute(img2,None)
+            # find the keypoints and descriptors with SIFT
+            kp1, des1 = floor_sift
+            kp2, des2 = sift.detectAndCompute(img2,None)
 
-        FLANN_INDEX_KDTREE = 0
-        index_params = dict(algorithm = FLANN_INDEX_KDTREE, trees = 5)
-        search_params = dict(checks = 50)
+            FLANN_INDEX_KDTREE = 0
+            index_params = dict(algorithm = FLANN_INDEX_KDTREE, trees = 5)
+            search_params = dict(checks = 50)
 
-        flann = cv2.FlannBasedMatcher(index_params, search_params)
+            flann = cv2.FlannBasedMatcher(index_params, search_params)
 
-        matches = flann.knnMatch(des1,des2,k=2)
+            # print(des2.dtype)
+            matches = flann.knnMatch(des1.astype(np.float32) / 255.0, des2.astype(np.float32) / 255.0,k=2)
 
-        # store all the good matches as per Lowe's ratio test.
-        good = []
-        for m,n in matches:
-            if m.distance < 0.7*n.distance:
-                good.append(m)
+            # store all the good matches as per Lowe's ratio test.
+            good = []
+            for m,n in matches:
+                if m.distance < 0.7*n.distance:
+                    good.append(m)
 
-        if len(good)>MIN_MATCH_COUNT:
-            # src_pts = np.float32([ kp1[m.queryIdx].pt for m in good ]).reshape(-1,1,2)
-            # dst_pts = np.float32([ kp2[m.trainIdx].pt for m in good ]).reshape(-1,1,2)
+            if len(good)>MIN_MATCH_COUNT:
+                # src_pts = np.float32([ kp1[m.queryIdx].pt for m in good ]).reshape(-1,1,2)
+                # dst_pts = np.float32([ kp2[m.trainIdx].pt for m in good ]).reshape(-1,1,2)
 
-            # M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC,5.0)
-            # #matchesMask = mask.ravel().tolist()
+                # M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC,5.0)
+                # #matchesMask = mask.ravel().tolist()
 
-            # h,w = img1[:,:,0].shape
-            # pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2)
-            # dst = cv2.perspectiveTransform(pts,M)
+                # h,w = img1[:,:,0].shape
+                # pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2)
+                # dst = cv2.perspectiveTransform(pts,M)
 
-            # img2 = cv2.polylines(img2,[np.int32(dst)],True,255,3, cv2.LINE_AA)
+                # img2 = cv2.polylines(img2,[np.int32(dst)],True,255,3, cv2.LINE_AA)
 
-            print('Floor!, ', len(good))
-            return 1
+                print('Floor!, ', len(good))
+                return 1
 
-        else:
-            print("Not enough matches are found - %d/%d" % (len(good),MIN_MATCH_COUNT))
+            else:
+                print("Not enough matches are found - %d/%d" % (len(good),MIN_MATCH_COUNT))
+                return 0
+        except:
+            print('camera image didnt find any feature')
             return 0
 
 
@@ -93,10 +98,10 @@ class FloorDetector:
 if __name__ == "__main__":
     rospy.init_node('floor_detector')
 
-    floor2_left = cv2.imread('/home/rmcal/Projects/BobaBot/src/elevator_utils/src/2_left_cropped.jpg')
-    floor2_right = cv2.imread('/home/rmcal/Projects/BobaBot/src/elevator_utils/src/2_right_cropped.jpg')
-    floor7_left = cv2.imread('/home/rmcal/Projects/BobaBot/src/elevator_utils/src/7_left_cropped.jpg')
-    floor7_right = cv2.imread('/home/rmcal/Projects/BobaBot/src/elevator_utils/src/7_right_cropped.jpg')
+    floor2_left = cv2.imread('/home/rmcal/Projects/BobaBot/src/elevator_utils/src/2_left_cropped.png')
+    floor2_right = cv2.imread('/home/rmcal/Projects/BobaBot/src/elevator_utils/src/2_right_cropped.png')
+    floor7_left = cv2.imread('/home/rmcal/Projects/BobaBot/src/elevator_utils/src/7_left_cropped.png')
+    floor7_right = cv2.imread('/home/rmcal/Projects/BobaBot/src/elevator_utils/src/7_right_cropped.png')
 
     sift = cv2.xfeatures2d.SURF_create()
     floor2_left_sift = sift.detectAndCompute(floor2_left, None)
@@ -107,7 +112,7 @@ if __name__ == "__main__":
     floor_sift_list = [floor2_left_sift, floor2_right_sift, floor7_left_sift, floor7_right_sift]
 
    # threshold_list = [90, 90, 15, 50]
-    threshold_list = [50, 90, 15, 30]
+    threshold_list = [50, 70, 50, 60]
     FloorDetector((floor_sift_list, sift, threshold_list))
     rospy.spin()
 

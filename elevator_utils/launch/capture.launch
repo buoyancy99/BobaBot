@@ -1,5 +1,5 @@
 <launch>
-  <node pkg="rosbag" type="play" name="rosbag" required="true" args="$(env HOME)/2019-12-05-21-54-49.bag"/>
+  <node pkg="rosbag" type="play" name="rosbag" required="true" args="$(env HOME)/2019-12-07-00-09-21.bag"/>
   <node name="extract" pkg="image_view" type="extract_images" respawn="false" required="true" output="screen" cwd="ROS_HOME">
     <remap from="image" to="/mynteye/left/image_color"/>
   </node>
