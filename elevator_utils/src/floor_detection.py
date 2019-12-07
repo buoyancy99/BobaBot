@@ -93,10 +93,10 @@ class FloorDetector:
 if __name__ == "__main__":
     rospy.init_node('floor_detector')
 
-    floor2_left = cv2.imread('/home/rmcal/Projects/BobaBot/src/elevator_utils/src/sdh2_right_highdef.png')
-    floor2_right = cv2.imread('/home/rmcal/Projects/BobaBot/src/elevator_utils/src/sdh2_right_highdef.png')
-    floor7_left = cv2.imread('/home/rmcal/Projects/BobaBot/src/elevator_utils/src/floor7_left_fix.png')
-    floor7_right = cv2.imread('/home/rmcal/Projects/BobaBot/src/elevator_utils/src/sdh7_right_highdef.png')
+    floor2_left = cv2.imread('/home/rmcal/Projects/BobaBot/src/elevator_utils/src/2_left.jpg')
+    floor2_right = cv2.imread('/home/rmcal/Projects/BobaBot/src/elevator_utils/src/2_right.jpg')
+    floor7_left = cv2.imread('/home/rmcal/Projects/BobaBot/src/elevator_utils/src/7_left.jpg')
+    floor7_right = cv2.imread('/home/rmcal/Projects/BobaBot/src/elevator_utils/src/7_right.jpg')
 
     sift = cv2.xfeatures2d.SURF_create()
     floor2_left_sift = sift.detectAndCompute(floor2_left, None)
