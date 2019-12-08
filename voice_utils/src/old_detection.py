@@ -59,7 +59,7 @@ def findPeak(magnitude_values, noise_level=2000):
                 
     return indices
 
-def extractFrequency(indices, freq_threshold=2):
+def extractFrequency(indices, freq_bins, freq_threshold=2):
     
     extracted_freqs = []
     
@@ -120,8 +120,8 @@ while 1:
 	magnitude_values = normalization_data[range(len(data_buffer_fft)//2)]
 	magnitude_values = np.abs(magnitude_values)
 	    
-	indices = findPeak(magnitude_values=magnitude_values, noise_level=200)
-	frequencies = extractFrequency(indices=indices)
+	indices = findPeak(magnitude_values=magnitude_values, noise_level=100)
+	frequencies = extractFrequency(indices, freq_bins)
 
 	#print(frequencies)
 
@@ -135,7 +135,7 @@ while 1:
 	x = max(frequencies)
 	#x = x/1000
 	print(x)
-	if x > 730 and x < 800:
+	if x > 750 and x < 800:
 		print("RIGHT DING MAYBE")
 	# if x > 270 and x < 350:
 	# 	print("LEFT DING MAYBE")

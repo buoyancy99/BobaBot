@@ -48,7 +48,7 @@ def findPeak(magnitude_values, noise_level=2000):
                 
     return indices
 
-def extractFrequency(indices, freq_threshold=2):
+def extractFrequency(indices, freq_bins, freq_threshold=2):
     
     extracted_freqs = []
     
@@ -76,15 +76,15 @@ def detection(ding_left, ding_right, is_7=True):
 	rate = rospy.Rate(10)
 
 	CHUNK = 4096 # number of data points to read at a time
-	RATE = 44100 # time resolution of the recording device (Hz)
+	RATE = 48000 # time resolution of the recording device (Hz)
 
 	p=pyaudio.PyAudio() # start the PyAudio class
 
 	stream=p.open(format=pyaudio.paInt16,channels=1,rate=RATE,input=True,
 		              frames_per_buffer=CHUNK) #uses default input device
-	sos = signal.butter(10, 500, 'hp', fs=RATE, output='sos')
-	ding_left = signal.sosfilt(sos, ding_left)
-	ding_right = signal.sosfilt(sos, ding_right)
+	# sos = signal.butter(10, 500, 'hp', fs=RATE, output='sos')
+	# ding_left = signal.sosfilt(sos, ding_left)
+	# ding_right = signal.sosfilt(sos, ding_right)
 	
 	while not rospy.is_shutdown():
 		
@@ -93,6 +93,7 @@ def detection(ding_left, ding_right, is_7=True):
 		for i in range(10): #to it a few times just to see
 		    data = np.frombuffer(stream.read(CHUNK),dtype=np.int16)
 		    data_buffer = np.concatenate([data_buffer, data])
+
 		number_samples = len(data_buffer)
 
 		freq_bins = arange(number_samples) * RATE/number_samples
@@ -107,12 +108,13 @@ def detection(ding_left, ding_right, is_7=True):
 		magnitude_values = normalization_data[range(len(data_buffer_fft)//2)]
 		magnitude_values = np.abs(magnitude_values)
 		    
-		indices = findPeak(magnitude_values=magnitude_values, noise_level=200)
-		frequencies = extractFrequency(indices=indices)
+		indices = findPeak(magnitude_values=magnitude_values, noise_level=50)
+		frequencies = extractFrequency(indices, freq_bins)
 		x = max(frequencies)
 		#x = x/1000
 		print(x)
-		if x > 730 and x < 800:
+		if(x >= 760 and x <= 770) or (x >= 790 and x <= 800):
+			print("DINGGGGGG")
 			pub.publish(1)
 		else:
 			pub.publish(0)
