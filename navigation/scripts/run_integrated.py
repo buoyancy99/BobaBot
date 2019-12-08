@@ -78,7 +78,7 @@ if __name__ == '__main__':
 	#raw_input("Tell me when to return")
 	
 	# Go back to elevator
-	result = move.movebase_client(pos=[-25.4651012421,-0.54517769814,0],ori=[0,0,0.0123519308175,0.999923711993])
+	# result = move.movebase_client(pos=[-25.4651012421,-0.54517769814,0],ori=[0,0,0.0123519308175,0.999923711993])
 	result = move.movebase_client(pos=[-25.4651012421,-3.54517769814,0],ori=[0,0,0.0123519308175,0.999923711993])
 	# move.set_init_pose(pos=[-25.5,-3.5,0],ori=[0,0,0.0123519308175,0.999923711993],cov=[0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.06853892326654787])
         
@@ -95,7 +95,13 @@ if __name__ == '__main__':
 	print('Congrats on making it to SDH 7!')
 
 	# Return to meeting room
-	result = move.movebase_client(pos=[24.7214736938,6.34529781342,0],ori=[0,0,0.0795551282507,0.996830467817])
+	result = move.movebase_client(pos=[25.4214736938,6.34529781342,0],ori=[0,0,0.0795551282507,0.996830467817])
+	tries = 1
+
+	while tries < 5 and result is False:
+		result = move.movebase_client(pos=[25.4214736938,6.34529781342,0],ori=[0,0,0.0795551282507,0.996830467817])
+		tries += 1
+		print('try', tries, 'failed')
 
 	print('Done!')
 
