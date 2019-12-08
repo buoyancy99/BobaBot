@@ -63,7 +63,7 @@ if __name__ == '__main__':
             pass
         if dinged:
             break
-
+    
     outside_right = Twist()
     outside_right.linear.x, outside_right.linear.y, outside_right.angular.z = -24.5, -3.5, 0
     wp_pub = WaypointPublisher([outside_right])
@@ -76,7 +76,7 @@ if __name__ == '__main__':
     stop_wait = time.time() + wait_open
     path = []
     while not rospy.is_shutdown():
-        r = rospy.Rate(3) # 3hz
+        r = rospy.Rate(1) # 1hz
         r.sleep()
         # If lidar detects right door, go in. Else after some time, go left.
         if elevator == "right":

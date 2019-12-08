@@ -86,7 +86,7 @@ if __name__ == '__main__':
     stop_wait = time.time() + wait_open
     path = []
     while not rospy.is_shutdown():
-        r = rospy.Rate(3) # 3hz
+        r = rospy.Rate(1) # 3hz
         r.sleep()
         # If lidar detects right door, go in. Else after some time, go left.
         if elevator == "right":
