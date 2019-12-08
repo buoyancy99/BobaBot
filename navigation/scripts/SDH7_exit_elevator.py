@@ -52,11 +52,11 @@ if __name__ == '__main__':
     if(side == "left"):
         floor_pub.publish(3)
         outside = Twist()
-        outside.linear.x, outside.linear.y, outside.angular.z = 51.5, 6.8, 3.14159
+        outside.linear.x, outside.linear.y, outside.angular.z = 50.5, 6.8, 3.14159
     if(side == "right"):
         floor_pub.publish(4)
         outside = Twist()
-        outside.linear.x, outside.linear.y, outside.angular.z = 51.5, 3.85, 3.14159
+        outside.linear.x, outside.linear.y, outside.angular.z = 50.5, 3.85, 3.14159
     
     # Wait for callback of elevator open door
     # raw_input("tell me when to exit")
